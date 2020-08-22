@@ -15,9 +15,8 @@ namespace Desktop.ViewModels
     {
         public TileViewModel(Services services)
         {
-            Items = new ObservableCollection<Tile>(Enumerable.Range(0, ViewableItemCount)
-                .Select(i => Tile.New()));
-
+            Items = new ObservableCollection<Tile>();
+            
             Process.Execute()
                 .Subscribe();
         }

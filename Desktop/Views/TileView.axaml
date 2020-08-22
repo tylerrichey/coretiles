@@ -8,7 +8,7 @@
     <ItemsControl Items="{Binding Items}">
       <ItemsControl.ItemTemplate>
         <DataTemplate>
-          <tiles:BasicTile />
+          <tiles:BaseTile />
         </DataTemplate>
       </ItemsControl.ItemTemplate>
     </ItemsControl>

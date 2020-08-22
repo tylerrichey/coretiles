@@ -5,13 +5,13 @@ using Desktop.Models;
 
 namespace Desktop.Tiles
 {
-    public class BasicTile : UserControl
+    public class BaseTile : UserControl
     {
         public Tile Tile { get; }
 
-        public BasicTile() => InitializeComponent();
+        public BaseTile() => InitializeComponent();
 
-        public BasicTile(Tile tile) => Tile = tile;
+        public BaseTile(Tile tile) => Tile = tile;
 
         private void InitializeComponent()
         {
