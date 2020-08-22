@@ -9,7 +9,7 @@ namespace Desktop.ViewModels
     {
         public MainWindowViewModel(Services services)
         {
-            Tiles = new TileViewModel();
+            Tiles = new TileViewModel(services);
         }
 
         public TileViewModel Tiles { get; }

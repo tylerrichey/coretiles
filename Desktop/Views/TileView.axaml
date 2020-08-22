@@ -2,6 +2,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tiles="clr-namespace:Desktop.Tiles"
              x:Class="Desktop.Views.TileView">
-  <Grid Name="MainGrid" DataContext="{Binding Items}" HorizontalAlignment="Center" VerticalAlignment="Center" ShowGridLines="True" />
+  <StackPanel>
+    <ItemsControl Items="{Binding Items}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <tiles:BasicTile />
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </StackPanel>
 </UserControl>

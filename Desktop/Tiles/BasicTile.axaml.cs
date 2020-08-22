@@ -9,12 +9,9 @@ namespace Desktop.Tiles
     {
         public Tile Tile { get; }
 
-        public BasicTile(Tile tile)
-        {
-            Tile = tile;
-            
-            InitializeComponent();
-        }
+        public BasicTile() => InitializeComponent();
+
+        public BasicTile(Tile tile) => Tile = tile;
 
         private void InitializeComponent()
         {

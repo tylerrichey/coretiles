@@ -10,8 +10,6 @@ namespace Desktop
 {
     public class App : Application
     {
-        public static event EventHandler<Size> ClientSize;
-
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -27,9 +25,6 @@ namespace Desktop
                 {
                     DataContext = new MainWindowViewModel(services)
                 };
-
-                var size = desktop.MainWindow.GetObservable(Window.ClientSizeProperty);
-                size.Subscribe(s => ClientSize?.Invoke(this, s));
             }
 
             base.OnFrameworkInitializationCompleted();
