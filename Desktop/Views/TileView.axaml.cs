@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System;
 using System.Collections.ObjectModel;
 using Desktop.ViewModels;
+using Desktop.Tiles;
 
 namespace Desktop.Views
 {
@@ -68,9 +69,11 @@ namespace Desktop.Views
                 if (tiles.Count > 0)
                 {
                     int r = 0, c = 0;
+                    //todo also hard coded to 3x4
                     for (var i = 0; i < 12; i++)
                     {
-                        var control = tiles[i].GetControl();
+                        //var control = tiles[i].GetControl();
+                        var control = new BasicTile(tiles[i]);
                         Grid.SetColumn(control, c);
                         Grid.SetRow(control, r);
                         mainGrid.Children.Add(control);
