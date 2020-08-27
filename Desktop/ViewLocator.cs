@@ -1,9 +1,9 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Desktop.ViewModels;
+using CoreTiles.Desktop.ViewModels;
 
-namespace Desktop
+namespace CoreTiles.Desktop
 {
     public class ViewLocator : IDataTemplate
     {

@@ -2,11 +2,11 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Desktop.ViewModels;
-using Desktop.Views;
+using CoreTiles.Desktop.ViewModels;
+using CoreTiles.Desktop.Views;
 using System;
 
-namespace Desktop
+namespace CoreTiles.Desktop
 {
     public class App : Application
     {

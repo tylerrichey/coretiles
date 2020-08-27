@@ -2,7 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Desktop.Views
+namespace CoreTiles.Desktop.Views
 {
     public class MainWindow : Window
     {

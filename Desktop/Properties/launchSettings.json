@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Desktop": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "TILEPATH": "C:\\Users\\Tyler\\source\\repos\\CoreTiles"
+      }
+    }
+  }
+}

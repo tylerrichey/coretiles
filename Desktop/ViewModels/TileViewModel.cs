@@ -1,21 +1,28 @@
 ﻿using Avalonia.Controls;
-using Desktop.Models;
-using Desktop.Tiles;
+using CoreTiles.Desktop.Tiles;
+using CoreTiles.Desktop.Views;
+using CoreTiles.Tiles;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Desktop.ViewModels
+namespace CoreTiles.Desktop.ViewModels
 {
     public class TileViewModel : ViewModelBase
     {
+        private Services _services;
+
         public TileViewModel(Services services)
         {
-            Items = new ObservableCollection<Tile>();
+            _services = services;
+            Items = new Dictionary<int, ObservableCollection<Tile>>();
+            GridCount.Columns.ForEach(i => Items.Add(i, new ObservableCollection<Tile>()));
             
             Process.Execute()
                 .Subscribe();
@@ -26,21 +33,21 @@ namespace Desktop.ViewModels
             int r = 0, c = 0;
             while (true)
             {
-                if (TileQueue.Items.TryDequeue(out Tile tile))
+                foreach (var p in _services.Tiles)
                 {
-                    if (Items.Count == ViewableItemCount)
+                    if (p.TileQueue.TryDequeue(out Tile tile))
                     {
-                        Items.RemoveAt(0);
+                        Items[c].Add(tile);
+                        c = c + 1 > GridCount.Columns - 1 ? 0 : c + 1;
                     }
-                    Items.Add(tile);
                 }
 
                 await Task.Delay(10);
             }
         });
 
-        public ObservableCollection<Tile> Items { get; }
-        public GridCountModel GridCount = new GridCountModel { Columns = 3, Rows = 4 };
+        public Dictionary<int, ObservableCollection<Tile>> Items { get; }
+        public GridCountModel GridCount = new GridCountModel { Columns = 2, Rows = 1 };
 
         private int ViewableItemCount => GridCount.Columns * GridCount.Rows;
     }

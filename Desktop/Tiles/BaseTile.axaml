@@ -1,20 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:models="clr-namespace:Desktop.Models"
-             x:Class="Desktop.Tiles.BaseTile">
-  <UserControl.DataTemplates>
-    <DataTemplate DataType="{x:Type models:TweetTile}">
-      <TextBlock Text="{Binding TweetText}" Background="AliceBlue" />
-    </DataTemplate>
-    <DataTemplate DataType="{x:Type models:KeyValueTile}">
-      <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
-        <TextBlock Grid.Row="0" Grid.Column="0">Key:</TextBlock>
-        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Key}"/>
-        <TextBlock Grid.Row="1" Grid.Column="0">Value:</TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Value}"/>
-      </Grid>
-    </DataTemplate>
-  </UserControl.DataTemplates>
+             x:Class="CoreTiles.Desktop.Tiles.BaseTile">
 
   <ContentControl Content="{Binding .}" />
 </UserControl>

@@ -1,37 +1,41 @@
-﻿using Desktop.Models;
+﻿using CoreTiles.Tiles;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Desktop
+namespace CoreTiles.Desktop
 {
     public class Services
     {
+        private List<Type> tilePluginsList = new List<Type>();
+        public List<Tile> Tiles { get; }
+
         public Services()
         {
-            //testing
-            var mock = Task.Run(async () =>
+            tilePluginsList = GetTilePlugins();
+            Tiles = tilePluginsList.Select(p => Activator.CreateInstance(p) as Tile)
+                .ToList();
+            Tiles.ForEach(t => t.Initialize());
+        }
+
+        private List<Type> GetTilePlugins()
+        {
+            var match = typeof(Tile);
+            var possiblePlugins = new List<Type>();
+
+            var tilePath = Environment.GetEnvironmentVariable("TILEPATH") ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            foreach (var f in Directory.GetFiles(tilePath, "*.dll", SearchOption.AllDirectories)
+                     .Where(d => Path.GetFileName(d).StartsWith("Tiles.", StringComparison.CurrentCulture)))
             {
-                var rando = new Random();
-                while (true)
-                {
-                    Tile tile;
-                    if (rando.Next(0, 100) > 50)
-                    {
-                        tile = new TweetTile { TweetText = "Testing" };
-                    }
-                    else
-                    {
-                        tile = new KeyValueTile { Key = "Test", Value = "Ing" };
-                    }
-                    TileQueue.Push(tile);
-                    await Task.Delay(TimeSpan.FromSeconds(5));
-                }
-            });
+                var assembly = Assembly.LoadFrom(f);
+                possiblePlugins.AddRange(assembly.GetTypes().Where(t => match.IsAssignableFrom(t) && !t.IsAbstract && t.IsClass));
+            }
+
+            return possiblePlugins.Distinct()
+                .ToList();
         }
     }
 }

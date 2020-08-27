@@ -3,7 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop", "Desktop\Desktop.csproj", "{ACE1FE9D-CD04-40BE-8E04-0EABBC126763}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop", "Desktop\Desktop.csproj", "{ACE1FE9D-CD04-40BE-8E04-0EABBC126763}"
+	ProjectSection(ProjectDependencies) = postProject
+		{095E0534-60CD-4FED-A771-0830C9EACE2B} = {095E0534-60CD-4FED-A771-0830C9EACE2B}
+		{F9F157B6-3574-4232-958A-09CDCD371A97} = {F9F157B6-3574-4232-958A-09CDCD371A97}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiles.Interface", "Tiles\Interface\Tiles.Interface.csproj", "{32408FFC-5D88-4394-95C5-AECB804DE4AF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiles.Twitter", "Tiles\Twitter\Tiles.Twitter.csproj", "{095E0534-60CD-4FED-A771-0830C9EACE2B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiles.KeyValueTile", "Tiles\KeyValuePair\Tiles.KeyValueTile.csproj", "{F9F157B6-3574-4232-958A-09CDCD371A97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +25,18 @@ Global
 		{ACE1FE9D-CD04-40BE-8E04-0EABBC126763}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACE1FE9D-CD04-40BE-8E04-0EABBC126763}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACE1FE9D-CD04-40BE-8E04-0EABBC126763}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32408FFC-5D88-4394-95C5-AECB804DE4AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32408FFC-5D88-4394-95C5-AECB804DE4AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32408FFC-5D88-4394-95C5-AECB804DE4AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32408FFC-5D88-4394-95C5-AECB804DE4AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{095E0534-60CD-4FED-A771-0830C9EACE2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{095E0534-60CD-4FED-A771-0830C9EACE2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{095E0534-60CD-4FED-A771-0830C9EACE2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{095E0534-60CD-4FED-A771-0830C9EACE2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9F157B6-3574-4232-958A-09CDCD371A97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9F157B6-3574-4232-958A-09CDCD371A97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9F157B6-3574-4232-958A-09CDCD371A97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9F157B6-3574-4232-958A-09CDCD371A97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

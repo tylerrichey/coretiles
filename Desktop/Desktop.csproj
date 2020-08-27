@@ -2,14 +2,20 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>CoreTiles.Desktop</RootNamespace>
+    <AssemblyName>CoreTiles.Desktop</AssemblyName>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.9.11" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.9.11" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.11" />
+    <PackageReference Include="Avalonia" Version="0.9.12" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.9.12" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.12" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tiles\Interface\Tiles.Interface.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Tiles\BaseTile.axaml.cs">

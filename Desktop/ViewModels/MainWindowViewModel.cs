@@ -1,9 +1,9 @@
-﻿using Desktop.Views;
+﻿using CoreTiles.Desktop.Views;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Desktop.ViewModels
+namespace CoreTiles.Desktop.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {

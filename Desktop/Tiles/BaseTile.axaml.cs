@@ -1,21 +1,29 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Desktop.Models;
+using Avalonia.Markup.Xaml.Templates;
+using CoreTiles.Tiles;
+using System.Reactive.Linq;
+using System.Linq;
+using System;
+using Avalonia.Controls.Templates;
 
-namespace Desktop.Tiles
+namespace CoreTiles.Desktop.Tiles
 {
     public class BaseTile : UserControl
     {
-        public Tile Tile { get; }
-
         public BaseTile() => InitializeComponent();
-
-        public BaseTile(Tile tile) => Tile = tile;
 
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+
+            this.GetObservable(Control.DataContextProperty)
+                .OfType<Tile>()
+                .Subscribe(t =>
+                {
+                    this.DataTemplates.Add(t.DataTemplate);
+                });
         }
     }
 }
