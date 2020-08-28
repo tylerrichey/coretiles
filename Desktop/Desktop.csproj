@@ -10,12 +10,14 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.9.12" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.9.12" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.12" />
+    <PackageReference Include="Avalonia" Version="0.10.0-preview4" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.0-preview4" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.0-preview4" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0-preview4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tiles\Interface\Tiles.Interface.csproj" />
+    <ProjectReference Include="..\Tiles\Twitter\Tiles.Twitter.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Tiles\BaseTile.axaml.cs">

@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Diagnostics;
+using Avalonia.Native;
 
 namespace CoreTiles.Desktop.Views
 {

@@ -1,6 +1,7 @@
 ﻿using CoreTiles.Tiles;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,10 +16,21 @@ namespace CoreTiles.Desktop
 
         public Services()
         {
-            tilePluginsList = GetTilePlugins();
-            Tiles = tilePluginsList.Select(p => Activator.CreateInstance(p) as Tile)
-                .ToList();
-            Tiles.ForEach(t => t.Initialize());
+            try
+            {
+                tilePluginsList = GetTilePlugins().Distinct()
+                    .ToList();
+                Tiles = tilePluginsList.Select(p => Activator.CreateInstance(p) as Tile)
+                    .ToList();
+                var initTasks = Tiles.Select(t => t.Initialize())
+                    .ToArray();
+                Task.WaitAll(initTasks);
+            }
+            catch (Exception e)
+            {
+                throw new ApplicationException("Error initializing plugins", e);
+            }
+            
         }
 
         private List<Type> GetTilePlugins()
@@ -30,12 +42,19 @@ namespace CoreTiles.Desktop
             foreach (var f in Directory.GetFiles(tilePath, "*.dll", SearchOption.AllDirectories)
                      .Where(d => Path.GetFileName(d).StartsWith("Tiles.", StringComparison.CurrentCulture)))
             {
-                var assembly = Assembly.LoadFrom(f);
-                possiblePlugins.AddRange(assembly.GetTypes().Where(t => match.IsAssignableFrom(t) && !t.IsAbstract && t.IsClass));
+                try
+                {
+                    var assembly = Assembly.LoadFrom(f);
+                    possiblePlugins.AddRange(assembly.GetTypes().Where(t => match.IsAssignableFrom(t) && !t.IsAbstract && t.IsClass));
+                }
+                catch
+                {
+                    //log something?
+                    //log something!
+                }
             }
 
-            return possiblePlugins.Distinct()
-                .ToList();
+            return possiblePlugins;
         }
     }
 }

@@ -2,6 +2,7 @@
 using Avalonia.Controls.Templates;
 using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace CoreTiles.Tiles
 {
@@ -10,13 +11,12 @@ namespace CoreTiles.Tiles
         public Guid Id = Guid.NewGuid();
         public ConcurrentQueue<Tile> TileQueue { get; set; } = new ConcurrentQueue<Tile>();
 
-
-        public abstract void Initialize();
+        public abstract Task Initialize();
         public abstract IDataTemplate DataTemplate { get; set; }
     }
 
     public interface ITile
     {
-        void Initialize();
+        Task Initialize();
     }
 }

@@ -32,9 +32,12 @@ namespace CoreTiles.Tiles
             return grid;
         });
 
-        public override void Initialize()
+        public override async Task Initialize()
         {
-            //todo replace this with a simple http server? some external messaging source
+            await Task.CompletedTask;
+
+            //todo have this start a simple http server for webhooks?
+            //need some external messaging source
 
             ////testing
             //var mock = Task.Run(async () =>
