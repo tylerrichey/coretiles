@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Linq;
 using System;
 using Avalonia.Controls.Templates;
+using CoreTiles.Desktop.Views;
 
 namespace CoreTiles.Desktop.Tiles
 {

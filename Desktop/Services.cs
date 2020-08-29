@@ -1,4 +1,5 @@
-﻿using CoreTiles.Tiles;
+﻿using CoreTiles.Desktop.InternalServices;
+using CoreTiles.Tiles;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -12,12 +13,14 @@ namespace CoreTiles.Desktop
     public class Services
     {
         private List<Type> tilePluginsList = new List<Type>();
+        public Weather Weather;
         public List<Tile> Tiles { get; }
 
         public Services()
         {
             try
             {
+                Weather = new Weather();
                 tilePluginsList = GetTilePlugins().Distinct()
                     .ToList();
                 Tiles = tilePluginsList.Select(p => Activator.CreateInstance(p) as Tile)

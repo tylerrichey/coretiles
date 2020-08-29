@@ -32,6 +32,11 @@ namespace CoreTiles.Tiles
             return grid;
         });
 
+        public override Window GetConfigurationWindow()
+        {
+            throw new NotImplementedException();
+        }
+
         public override async Task Initialize()
         {
             await Task.CompletedTask;

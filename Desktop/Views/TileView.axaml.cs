@@ -18,7 +18,6 @@ namespace CoreTiles.Desktop.Views
 {
     public class TileView : UserControl
     {
-        private Grid mainGrid => this.FindControl<Grid>("MainGrid");
         private ScrollViewer scrollViewer => this.FindControl<ScrollViewer>("ScrollViewer");
 
         public TileView()

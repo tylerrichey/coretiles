@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -14,5 +15,10 @@ namespace CoreTiles.Tiles
             Grid.SetRow(control, row);
             grid.Children.Add(control);
         }
+
+        public static void ForEach(this int enumerable, Action<int> action) =>
+            Enumerable.Range(0, enumerable)
+                .ToList()
+                .ForEach(action);
     }
 }

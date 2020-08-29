@@ -4,7 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tiles="clr-namespace:CoreTiles.Desktop.Tiles"
              x:Class="CoreTiles.Desktop.Views.TileView">
-  <ScrollViewer Name="ScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Background="#212529">
+  <DockPanel>
+    <Menu DockPanel.Dock="Bottom">
+      <MenuItem Header="{Binding WeatherData}" />
+    </Menu>
+    <ScrollViewer Name="ScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Background="{Binding WindowBackground}">
       <ItemsControl Items="{Binding Items}">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
@@ -17,5 +21,6 @@
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
-  </ScrollViewer>
+    </ScrollViewer>
+  </DockPanel>
 </UserControl>
