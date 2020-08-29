@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiles.Twitter", "Tiles\Twit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiles.KeyValueTile", "Tiles\KeyValuePair\Tiles.KeyValueTile.csproj", "{F9F157B6-3574-4232-958A-09CDCD371A97}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageViewerWindow", "ImageViewerWindow\ImageViewerWindow.csproj", "{9650023B-0101-45F7-A44B-D96121EA158A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{F9F157B6-3574-4232-958A-09CDCD371A97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9F157B6-3574-4232-958A-09CDCD371A97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9F157B6-3574-4232-958A-09CDCD371A97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9650023B-0101-45F7-A44B-D96121EA158A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9650023B-0101-45F7-A44B-D96121EA158A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9650023B-0101-45F7-A44B-D96121EA158A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9650023B-0101-45F7-A44B-D96121EA158A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

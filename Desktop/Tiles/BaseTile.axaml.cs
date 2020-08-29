@@ -22,6 +22,9 @@ namespace CoreTiles.Desktop.Tiles
             this.GetObservable(Control.DataContextProperty)
                 .OfType<Tile>()
                 .Subscribe(t => this.DataTemplates.Add(t.DataTemplate));
+
+            this.PointerMoved += (s, e) => Height = double.NaN;
+            this.PointerLeave += (s, e) => Height = MinHeight;
         }
     }
 }

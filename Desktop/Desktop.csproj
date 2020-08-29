@@ -17,6 +17,7 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ImageViewerWindow\ImageViewerWindow.csproj" />
     <ProjectReference Include="..\Tiles\Interface\Tiles.Interface.csproj" />
     <ProjectReference Include="..\Tiles\Twitter\Tiles.Twitter.csproj" />
   </ItemGroup>

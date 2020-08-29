@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace CoreTiles.Desktop.ViewModels
 {
-    //todo add way to randomize color bound to properties on this viewmodel
+    //todo add internal service to randomize color bound to properties on this viewmodel
     public class TileViewModel : ViewModelBase
     {
         public ObservableCollection<Tile> Items { get; }

@@ -17,6 +17,7 @@ using Avalonia.Media.Imaging;
 using System.Net.Http;
 using System.IO;
 using ReactiveUI;
+using ImageViewerWindow;
 
 namespace CoreTiles.Tiles
 {
@@ -30,7 +31,9 @@ namespace CoreTiles.Tiles
                 Margin = Thickness.Parse("4"),
                 Text = text,
                 TextWrapping = TextWrapping.Wrap,
-                Cursor = new Cursor(StandardCursorType.Hand)
+                TextTrimming = TextTrimming.WordEllipsis,
+                Cursor = new Cursor(StandardCursorType.Hand),
+                ClipToBounds = true
             };
 
         private static Button DefaultButton(string text) =>
@@ -40,7 +43,8 @@ namespace CoreTiles.Tiles
                 FontSize = 14,
                 Margin = Thickness.Parse("4"),
                 Content = text,
-                Cursor = new Cursor(StandardCursorType.Hand)
+                Cursor = new Cursor(StandardCursorType.Hand),
+                ClipToBounds = true
             };
 
         public override IDataTemplate DataTemplate { get; set; } = new FuncDataTemplate<Twitter>((t, s) =>
@@ -71,30 +75,7 @@ namespace CoreTiles.Tiles
             {
                 var button = DefaultButton("Photo(s)");
                 button.Command = ReactiveCommand.Create<ITweet>(t =>
-                {
-                    var bytes = Helpers.HttpClient.GetByteArrayAsync(t.Media.First().MediaURL).Result;
-                    using var memoryStream = new MemoryStream(bytes);
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    var bitmap = new Bitmap(memoryStream);
-                    //todo this window should display all the media
-                    var window = new Window
-                    {
-                        Content = new Viewbox
-                        {
-                            Stretch = Stretch.None,
-                            Child = new Image()
-                            {
-                                Source = bitmap
-                            }
-                        },
-                        Width = bitmap.Size.Width,
-                        Height = bitmap.Size.Height,
-                        Name = t.Media.First().ExpandedURL
-                    };
-                    window.LostFocus += (sender, e) => window.Close();
-                    window.Closing += (sender, e) => bitmap.Dispose();
-                    window.Show();
-                });
+                    ImageViewer.Show(t.Media.Where(m => m.MediaType == "photo").Select(u => u.MediaURL).ToList()));
                 button.CommandParameter = t.Tweet;
                 statsline.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
                 button.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
@@ -103,13 +84,22 @@ namespace CoreTiles.Tiles
 
             var stackPanel = new StackPanel
             {
-                Background = Brush.Parse("#495057"),
-                Margin = Thickness.Parse("4")
+                ClipToBounds = true
             };
             stackPanel.Children.Add(names);
             stackPanel.Children.Add(tweet);
             stackPanel.Children.Add(wrapPanel);
-            return stackPanel;
+
+            return new Border()
+            {
+                Background = Brush.Parse("#495057"),
+                Padding = Thickness.Parse("4"),
+                Margin = Thickness.Parse("4"),
+                CornerRadius = CornerRadius.Parse("3"),
+                BorderThickness = Thickness.Parse("2"),
+                BorderBrush = Brush.Parse("#495050"),
+                Child = stackPanel
+            };
         });
 
         public ITweet Tweet { get; }

@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ImageViewerWindow\ImageViewerWindow.csproj" />
     <ProjectReference Include="..\Interface\Tiles.Interface.csproj" />
   </ItemGroup>
 

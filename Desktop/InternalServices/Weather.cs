@@ -29,7 +29,7 @@ namespace CoreTiles.Desktop.InternalServices
 
         public Subject<string> StartMonitoring()
         {
-            timer = new Timer(async (s) =>
+            timer ??= new Timer(async (s) =>
             {
                 try
                 {
