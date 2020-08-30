@@ -9,7 +9,7 @@ using System.Text;
 
 namespace ImageViewerWindow
 {
-    public class ImageViewerViewModel : ReactiveObject
+    public sealed class ImageViewerViewModel : ReactiveObject, IDisposable
     {
         private Bitmap currentImage;
         private int index = 1;
@@ -31,6 +31,7 @@ namespace ImageViewerWindow
         public ImageViewerViewModel(List<string> urls)
         {
             _urls = urls;
+
             SetImageByIndex(index);
         }
 
@@ -51,5 +52,7 @@ namespace ImageViewerWindow
             CurrentImage = new Bitmap(memoryStream);
             WindowTitle = index + " / " + _urls.Count;
         }
+
+        public void Dispose() => CurrentImage?.Dispose();
     }
 }

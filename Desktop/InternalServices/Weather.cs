@@ -29,6 +29,7 @@ namespace CoreTiles.Desktop.InternalServices
 
         public Subject<string> StartMonitoring()
         {
+#if !DEBUG
             timer ??= new Timer(async (s) =>
             {
                 try
@@ -65,6 +66,7 @@ namespace CoreTiles.Desktop.InternalServices
                 }
                 catch { }
             }, null, TimeSpan.Zero, TimeSpan.FromMinutes(15));
+#endif
             return InfoLine;
         }
     }

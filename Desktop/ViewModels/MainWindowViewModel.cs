@@ -7,10 +7,7 @@ namespace CoreTiles.Desktop.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public MainWindowViewModel(Services services)
-        {
-            Tiles = new TileViewModel(services);
-        }
+        public MainWindowViewModel(Services services) => Tiles = new TileViewModel(services);
 
         public TileViewModel Tiles { get; }
     }

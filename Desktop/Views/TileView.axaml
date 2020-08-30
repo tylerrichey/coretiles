@@ -12,6 +12,7 @@
       </Style>
     </DockPanel.Styles>
     <Menu DockPanel.Dock="Bottom">
+      <MenuItem Header="{Binding TimeDisplay}" />
       <MenuItem Header="{Binding WeatherData}" />
     </Menu>
     <ScrollViewer Name="ScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Background="{Binding WindowBackground}">

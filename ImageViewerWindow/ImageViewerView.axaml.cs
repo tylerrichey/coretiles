@@ -1,7 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using CoreTiles.Tiles;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,17 +27,18 @@ namespace ImageViewerWindow
 
             this.LostFocus += (s, e) => this.Close();
             this.PointerPressed += (s, e) => ((ImageViewerViewModel)DataContext)?.Next();
+            this.Closed += (s, e) => ((ImageViewerViewModel)DataContext)?.Dispose();
         }
 
-        public static ImageViewer Get(List<string> urls)
+        public static ImageViewer GetImageViewerWithUrls(List<string> urls)
         {
-            if (urls.Count == 0) { throw new ApplicationException(); }
+            if (urls.Count == 0) { throw new ArgumentException("No URLs supplied."); }
 
             var vm = new ImageViewerViewModel(urls);
             return new ImageViewer(vm);
         }
 
-        public static void Show(List<string> urls) => Get(urls).Show();
-        public static void Show(string url) => Get(new List<string> { url });
+        public static void Show(List<string> urls) => GetImageViewerWithUrls(urls).Show();
+        public static void Show(string url) => GetImageViewerWithUrls(new List<string> { url });
     }
 }

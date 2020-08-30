@@ -29,9 +29,11 @@ namespace CoreTiles.Desktop
                     .ToArray();
                 Task.WaitAll(initTasks);
             }
-            catch (Exception e)
+            catch (AggregateException ae)
             {
-                throw new ApplicationException("Error initializing plugins", e);
+                //todo log these
+                var excs = ae.Flatten().InnerExceptions;
+                throw new ApplicationException("Error initializing plugins", excs[0]);
             }
             
         }

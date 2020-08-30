@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Threading;
 using CoreTiles.Desktop.Tiles;
 using CoreTiles.Desktop.Views;
 using CoreTiles.Tiles;
@@ -54,12 +55,29 @@ namespace CoreTiles.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref weatherData, value);
         }
 
+        private string timeDisplay = DateTime.Now.ToShortTimeString().Replace(" ", "");
+        public string TimeDisplay
+        {
+            get => timeDisplay;
+            set => this.RaiseAndSetIfChanged(ref timeDisplay, value);
+        }
+
         public TileViewModel(Services services)
         {
             _services = services;
             _services.Weather.StartMonitoring()
                 .Subscribe(s => WeatherData = s);
             Items = new ObservableCollection<Tile>();
+
+            //todo look in to better way to do this
+            void RunTimeTimer() => DispatcherTimer.Run(() =>
+            {
+                TimeDisplay = DateTime.Now.ToShortTimeString().Replace(" ", "");
+                return true;
+            }, TimeSpan.FromMinutes(1), DispatcherPriority.ApplicationIdle);
+            
+            var then = DateTime.Now.AddSeconds(2);
+            DispatcherTimer.RunOnce(RunTimeTimer, new DateTime(then.Year, then.Month, then.Day, then.Hour, then.Minute, then.Second) - DateTime.Now);
             
             Process.Execute()
                 .Subscribe();
