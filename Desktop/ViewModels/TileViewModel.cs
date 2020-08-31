@@ -1,24 +1,17 @@
-﻿using Avalonia.Controls;
-using Avalonia.Media;
+﻿using Avalonia.Media;
 using Avalonia.Threading;
-using CoreTiles.Desktop.Tiles;
-using CoreTiles.Desktop.Views;
 using CoreTiles.Tiles;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Runtime.InteropServices.ComTypes;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace CoreTiles.Desktop.ViewModels
 {
-    //todo add internal service to randomize color bound to properties on this viewmodel
+    //todo something with randomizing the color pallete
     public class TileViewModel : ViewModelBase
     {
         public ObservableCollection<Tile> Items { get; }
@@ -74,6 +67,8 @@ namespace CoreTiles.Desktop.ViewModels
                 .Subscribe();
         }
 
+        public int Columns = 3;
+
         public ReactiveCommand<Unit, Task> Process => ReactiveCommand.Create(async () =>
         {
             while (true)
@@ -84,8 +79,7 @@ namespace CoreTiles.Desktop.ViewModels
                     {
                         if (Items.Count == itemsToCache)
                         {
-                            //todo hard coded columns
-                            Enumerable.Range(0, 3)
+                            Enumerable.Range(0, Columns)
                                 .ToList()
                                 .ForEach(i => Items.RemoveAt(0));
                         }

@@ -27,12 +27,26 @@ namespace CoreTiles.Desktop.Views
                         {
                             case MainWindow mainWindow:
                                 var clientSizeObv = mainWindow.GetObservable(Window.ClientSizeProperty);
-                                //todo hard coded columns
-                                clientSizeObv.Subscribe(size => vm.ItemWidth = (size.Width / 3) - 8);
+                                clientSizeObv.Subscribe(size =>
+                                {
+                                    var noWiderThan = 500;
+                                    var padding = 8;
+                                    foreach (var i in Enumerable.Range(1, 10))
+                                    {
+                                        var target = size.Width / i;
+                                        if (target <= noWiderThan)
+                                        {
+                                            vm.ItemWidth = target - padding;
+                                            vm.Columns = i;
+                                            break;
+                                        }
+                                    }
+                                });
                                 break;
                         }
                     };
 
+                    //todo probably make this more robust
                     this.LayoutUpdated += (s, e) =>
                     {
                         if (!pressed && !scrollViewer.IsPointerOver)

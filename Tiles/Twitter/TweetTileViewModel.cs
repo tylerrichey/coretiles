@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using ImageViewerWindow;
 using ReactiveUI;
 using System;
@@ -46,7 +47,15 @@ namespace CoreTiles.Tiles
             var photos = tweet.Media.Where(m => m.MediaType == "photo");
             PhotoButtonLabel = photos.Count() > 1 ? "Photo(s)" : "Photo";
             PhotoButtonEnabled = photos.Any();
-            PhotoCommand = ReactiveCommand.Create(() => ImageViewer.Show(photos.Select(u => u.MediaURL)));
+            PhotoCommand = ReactiveCommand.Create(() =>
+            {
+                var viewModel = new ImageViewerViewModel(photos.Select(u => u.MediaURL));
+                var imageViewer = new ImageViewer
+                {
+                    DataContext = viewModel
+                };
+                imageViewer.Show();
+            });
             VideoButtonEnabled = tweet.Media.Any(v => v.MediaType == "video");
             if (VideoButtonEnabled)
             {

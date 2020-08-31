@@ -24,7 +24,7 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <tiles:BaseTile MinHeight="150" Height="150" />
+            <tiles:BaseTile MinHeight="150" Height="150" VerticalAlignment="Bottom" />
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>

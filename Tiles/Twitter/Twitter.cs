@@ -31,7 +31,7 @@ namespace CoreTiles.Tiles
             using var streamReader = new StreamReader(dataFile);
             var json = await streamReader.ReadToEndAsync();
             var tweetDTOs = json.ConvertJsonTo<ITweetDTO[]>();
-            foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(9)))
+            foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.OrderByDescending(t => t.CreatedAt).Take(75)))
             {
                 TileQueue.Enqueue(new Twitter(tweet));
             }

@@ -4,6 +4,6 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="Core Tiles"
         Content="{Binding Tiles}"
-        Height="800" Width="1000"
+        Height="800" Width="1350"
         Name="MainWindow">
 </Window>

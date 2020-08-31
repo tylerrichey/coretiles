@@ -16,11 +16,6 @@ namespace ImageViewerWindow
     public class ImageViewer : Window
     {
         public ImageViewer() => this.InitializeComponent();
-        public ImageViewer(ImageViewerViewModel imageViewerViewModel)
-        {
-            this.InitializeComponent();
-            DataContext = imageViewerViewModel;
-        }
 
         private void InitializeComponent()
         {
@@ -30,16 +25,5 @@ namespace ImageViewerWindow
             this.PointerPressed += (s, e) => ((ImageViewerViewModel)DataContext)?.Next();
             this.Closed += (s, e) => ((ImageViewerViewModel)DataContext)?.Dispose();
         }
-
-        public static ImageViewer GetImageViewerWithUrls(List<string> urls)
-        {
-            if (urls.Count == 0) { throw new ArgumentException("No URLs supplied."); }
-
-            var vm = new ImageViewerViewModel(urls);
-            return new ImageViewer(vm);
-        }
-
-        public static void Show(IEnumerable<string> urls) => GetImageViewerWithUrls(urls.ToList()).Show();
-        public static void Show(string url) => GetImageViewerWithUrls(new List<string> { url });
     }
 }

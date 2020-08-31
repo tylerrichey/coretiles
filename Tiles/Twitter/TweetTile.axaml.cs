@@ -19,8 +19,8 @@ namespace CoreTiles.Tiles
                 .Subscribe(vm =>
                 {
                     this.FindControl<WrapPanel>("NamePanel").PointerPressed += (s, e) => vm.LaunchUrl(vm.ProfileUrl);
-                    this.FindControl<WrapPanel>("TweetPanel").PointerPressed += (s, e) => vm.LaunchUrl(vm.ProfileUrl);
-                    this.FindControl<WrapPanel>("StatsPanel").PointerPressed += (s, e) => vm.LaunchUrl(vm.ProfileUrl);
+                    this.FindControl<WrapPanel>("TweetPanel").PointerPressed += (s, e) => vm.LaunchUrl(vm.TweetUrl);
+                    this.FindControl<WrapPanel>("StatsPanel").PointerPressed += (s, e) => vm.LaunchUrl(vm.StatsUrl);
                 });
         }
     }
