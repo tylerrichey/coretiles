@@ -10,7 +10,7 @@ namespace CoreTiles.Desktop
 {
     public class App : Application
     {
-        //todo fix, because obviously hacky but weird behavior occurs if i instantiate at this point, or anywhere after
+        //todo fix, because obviously hacky but weird behavior occurs if i instantiate at this point
         Services _services = Program.Services;
         public override void Initialize()
         {

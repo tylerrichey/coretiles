@@ -40,14 +40,6 @@ namespace CoreTiles.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref windowBackground, value);
         }
 
-        //todo this doesn't fall to tiles from here, re-factor
-        private IBrush tileBackground = Brush.Parse("#495057");
-        public IBrush TileBackground
-        {
-            get => tileBackground;
-            set => this.RaiseAndSetIfChanged(ref tileBackground, value);
-        }
-
         private string weatherData = "No Weather Data";
         public string WeatherData
         {
@@ -75,8 +67,7 @@ namespace CoreTiles.Desktop.ViewModels
                 TimeDisplay = DateTime.Now.ToShortTimeString().Replace(" ", "");
                 return true;
             }, TimeSpan.FromMinutes(1), DispatcherPriority.ApplicationIdle);
-            
-            var then = DateTime.Now.AddSeconds(2);
+            var then = DateTime.Now.AddSeconds(1);
             DispatcherTimer.RunOnce(RunTimeTimer, new DateTime(then.Year, then.Month, then.Day, then.Hour, then.Minute, then.Second) - DateTime.Now);
             
             Process.Execute()

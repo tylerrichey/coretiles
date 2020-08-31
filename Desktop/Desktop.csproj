@@ -22,8 +22,8 @@
     <ProjectReference Include="..\Tiles\Twitter\Tiles.Twitter.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Tiles\BaseTile.axaml.cs">
-      <DependentUpon>BaseTile.axaml</DependentUpon>
+    <Compile Update="**\*.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

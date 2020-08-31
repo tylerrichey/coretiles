@@ -11,7 +11,9 @@ namespace CoreTiles.Desktop.InternalServices
 {
     public class Weather
     {
+#pragma warning disable RCS1213 // Remove unused member declaration.
         private Timer timer;
+#pragma warning restore RCS1213 // Remove unused member declaration.
         public Subject<string> InfoLine { get; } = new Subject<string>();
 
         private async Task<(int, string)> GetWeatherWunderground()
@@ -42,7 +44,7 @@ namespace CoreTiles.Desktop.InternalServices
                     {
                         _infoLine += "⛅";
                     }
-                    if (forecast.Contains("rain"))
+                    else if (forecast.Contains("rain"))
                     {
                         _infoLine += "🌧";
                     }

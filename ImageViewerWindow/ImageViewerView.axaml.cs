@@ -7,6 +7,7 @@ using CoreTiles.Tiles;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
@@ -38,7 +39,7 @@ namespace ImageViewerWindow
             return new ImageViewer(vm);
         }
 
-        public static void Show(List<string> urls) => GetImageViewerWithUrls(urls).Show();
+        public static void Show(IEnumerable<string> urls) => GetImageViewerWithUrls(urls.ToList()).Show();
         public static void Show(string url) => GetImageViewerWithUrls(new List<string> { url });
     }
 }

@@ -5,13 +5,6 @@ using System.Linq;
 using System;
 using CoreTiles.Desktop.ViewModels;
 using System.Reactive.Linq;
-using System.Collections.ObjectModel;
-using Avalonia.Markup.Xaml.Templates;
-using CoreTiles.Desktop.Tiles;
-using Avalonia.Data;
-using System.Collections;
-using Avalonia.Controls.Generators;
-using System.Data;
 using System.Threading;
 
 namespace CoreTiles.Desktop.Views
@@ -34,6 +27,7 @@ namespace CoreTiles.Desktop.Views
                         {
                             case MainWindow mainWindow:
                                 var clientSizeObv = mainWindow.GetObservable(Window.ClientSizeProperty);
+                                //todo hard coded columns
                                 clientSizeObv.Subscribe(size => vm.ItemWidth = (size.Width / 3) - 8);
                                 break;
                         }

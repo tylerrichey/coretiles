@@ -44,6 +44,7 @@ namespace ImageViewerWindow
             }
         }
         
+        //todo cache bitmaps for multiple images
         private void SetImageByIndex(int index)
         {
             var bytes = Helpers.HttpClient.GetByteArrayAsync(_urls[index - 1]).Result;

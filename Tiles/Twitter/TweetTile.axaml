@@ -1,0 +1,43 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Class="CoreTiles.Tiles.TweetTile">
+  <UserControl.Styles>
+    <Style Selector="TextBlock">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontFamily" Value="Cascadia Code PL" />
+      <Setter Property="Margin" Value="4" />
+      <Setter Property="TextWrapping" Value="WrapWithOverflow" />
+      <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+    <Style Selector="Button">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontFamily" Value="Cascadia Code PL" />
+      <Setter Property="Margin" Value="4" />
+      <Setter Property="ClipToBounds" Value="True" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+  </UserControl.Styles>
+  <Border Background="#495057" Padding="4" Margin="4" CornerRadius="3" BorderThickness="2" BorderBrush="#53c2c2">
+    <StackPanel ClipToBounds="True">
+      <WrapPanel Name="NamePanel" Orientation="Horizontal" Cursor="Hand">
+        <TextBlock Foreground="OrangeRed" Text="{Binding ScreenName}" />
+        <TextBlock Text="{Binding Name}" />
+      </WrapPanel>
+      <WrapPanel Name="TweetPanel" Orientation="Horizontal" Cursor="Hand">
+        <TextBlock Text="{Binding TweetText}" />
+      </WrapPanel>
+      <WrapPanel Name="StatsPanel" Orientation="Horizontal" Cursor="Hand">
+        <TextBlock Text="{Binding TweetTime}" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding StatsCount}" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding FavoriteCount}" VerticalAlignment="Center" />
+        <Button IsVisible="{Binding PhotoButtonEnabled}" IsEnabled="{Binding PhotoButtonEnabled}" Content="{Binding PhotoButtonLabel}" Command="{Binding PhotoCommand}" VerticalAlignment="Center" />
+        <Button IsVisible="{Binding VideoButtonEnabled}" IsEnabled="{Binding VideoButtonEnabled}" Content="Video" Command="{Binding VideoCommand}" VerticalAlignment="Center" />
+      </WrapPanel>
+      <Border>
+        <ContentControl Content="{Binding QuoteTweet}" />
+      </Border>
+    </StackPanel>
+  </Border>
+</UserControl>
