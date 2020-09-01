@@ -10,8 +10,13 @@
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontFamily" Value="Cascadia Code PL" />
       </Style>
+      <Style Selector="MenuItem.RedText">
+        <Setter Property="Foreground" Value="#DC143C" />
+        <Setter Property="FontWeight" Value="Bold" />
+      </Style>
     </DockPanel.Styles>
     <Menu DockPanel.Dock="Bottom">
+      <MenuItem Header="{Binding NewItemCounter}" Name="ItemCounterMenuItem" IsVisible="{Binding NewItemCounter}" Classes="RedText" />
       <MenuItem Header="{Binding TimeDisplay}" />
       <MenuItem Header="{Binding WeatherData}" />
     </Menu>
@@ -24,7 +29,7 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <tiles:BaseTile MinHeight="150" Height="150" VerticalAlignment="Bottom" />
+            <tiles:BaseTile MinHeight="150" Height="150" VerticalAlignment="Top" />
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>

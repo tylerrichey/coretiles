@@ -1,12 +1,15 @@
-﻿using Avalonia.Media;
+﻿using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.Threading;
 using CoreTiles.Tiles;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CoreTiles.Desktop.ViewModels
@@ -15,6 +18,7 @@ namespace CoreTiles.Desktop.ViewModels
     public class TileViewModel : ViewModelBase
     {
         public ObservableCollection<Tile> Items { get; }
+        public ObservableCollection<Tile> ItemsBuffer { get; }
 
         private int itemsToCache = 250;
         private Services _services;
@@ -47,48 +51,84 @@ namespace CoreTiles.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref timeDisplay, value);
         }
 
+        private int newItemCounter;
+        public int NewItemCounter
+        {
+            get => newItemCounter;
+            set => this.RaiseAndSetIfChanged(ref newItemCounter, value);
+        }
+
+        private readonly Timer timer;
+
         public TileViewModel(Services services)
         {
             _services = services;
             _services.Weather.StartMonitoring()
                 .Subscribe(s => WeatherData = s);
             Items = new ObservableCollection<Tile>();
+            ItemsBuffer = new ObservableCollection<Tile>();
 
-            //todo look in to better way to do this
-            void RunTimeTimer() => DispatcherTimer.Run(() =>
-            {
-                TimeDisplay = DateTime.Now.ToShortTimeString().Replace(" ", "");
-                return true;
-            }, TimeSpan.FromMinutes(1), DispatcherPriority.ApplicationIdle);
             var then = DateTime.Now.AddSeconds(1);
-            DispatcherTimer.RunOnce(RunTimeTimer, new DateTime(then.Year, then.Month, then.Day, then.Hour, then.Minute, then.Second) - DateTime.Now);
-            
+            timer = new Timer((s) => TimeDisplay = DateTime.Now.ToShortTimeString().Replace(" ", "")
+                ,null, new DateTime(then.Year, then.Month, then.Day, then.Hour, then.Minute, then.Second) - DateTime.Now
+                ,TimeSpan.FromMinutes(1));
+
             Process.Execute()
                 .Subscribe();
         }
 
         public int Columns = 3;
+        public bool BufferItems = false;
+
+        private bool windowFocused;
+        public void AnnounceWindowFocus(bool isFocused)
+        {
+            windowFocused = isFocused;
+            NewItemCounter = windowFocused && ItemsBuffer.Count == 0 ? 0 : NewItemCounter;
+        }
 
         public ReactiveCommand<Unit, Task> Process => ReactiveCommand.Create(async () =>
         {
             while (true)
             {
+                if (!BufferItems && ItemsBuffer.Any())
+                {
+                    ItemsBuffer.ToList()
+                        .ForEach(InsertNewTile);
+                    ItemsBuffer.Clear();
+                    NewItemCounter = 0;
+                }
+
                 foreach (var p in _services.Tiles)
                 {
                     if (p.TileQueue.TryDequeue(out Tile tile))
                     {
-                        if (Items.Count == itemsToCache)
+                        if (BufferItems)
                         {
-                            Enumerable.Range(0, Columns)
-                                .ToList()
-                                .ForEach(i => Items.RemoveAt(0));
+                            ItemsBuffer.Add(tile);
+                            NewItemCounter++;
                         }
-                        Items.Add(tile);
+                        else
+                        {
+                            InsertNewTile(tile);
+                            NewItemCounter = windowFocused ? 0 : NewItemCounter + 1;
+                        }
                     }
                 }
 
                 await Task.Delay(10);
             }
         });
+
+        private void InsertNewTile(Tile tile)
+        {
+            if (Items.Count == itemsToCache)
+            {
+                Enumerable.Range(itemsToCache - 1 - Columns, Columns)
+                    .ToList()
+                    .ForEach(i => Items.RemoveAt(i));
+            }
+            Items.Insert(0, tile);
+        }
     }
 }

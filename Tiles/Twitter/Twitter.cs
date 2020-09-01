@@ -15,7 +15,8 @@ namespace CoreTiles.Tiles
 {
     public class Twitter : Tile
     {
-        public override IDataTemplate DataTemplate { get; set; } = new FuncDataTemplate<Twitter>((t, s) => new TweetTile { DataContext = new TweetTileViewModel(t.CurrentTweet) });
+        public override IDataTemplate DataTemplate { get; set; } = new FuncDataTemplate<Twitter>((t, s) 
+            => new TweetTile { DataContext = new TweetTileViewModel(t.CurrentTweet) });
 
         public ITweet CurrentTweet { get; }
 
@@ -26,21 +27,10 @@ namespace CoreTiles.Tiles
 
         public override async Task Initialize()
         {
-#if DEBUG
-            const string dataFile = @"C:\Users\Tyler\Desktop\Tweets\tweets637332765734054977.json";
-            using var streamReader = new StreamReader(dataFile);
-            var json = await streamReader.ReadToEndAsync();
-            var tweetDTOs = json.ConvertJsonTo<ITweetDTO[]>();
-            foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.OrderByDescending(t => t.CreatedAt).Take(75)))
+            if (!await InitDebugEnvironment())
             {
-                TileQueue.Enqueue(new Twitter(tweet));
+                await InitTweetinvi();
             }
-            return;
-#endif
-
-#pragma warning disable CS0162 // Unreachable code detected
-            await InitTweetinvi();
-#pragma warning restore CS0162 // Unreachable code detected
         }
 
         private async Task InitTweetinvi()
@@ -84,6 +74,33 @@ namespace CoreTiles.Tiles
         public override Window GetConfigurationWindow()
         {
             throw new NotImplementedException();
+        }
+
+        private async Task<bool> InitDebugEnvironment()
+        {
+#if DEBUG
+            const string dataFile = @"C:\Users\Tyler\Desktop\Tweets\tweets637332765734054977.json";
+            using var streamReader = new StreamReader(dataFile);
+            var json = await streamReader.ReadToEndAsync();
+            var tweetDTOs = json.ConvertJsonTo<ITweetDTO[]>();
+            foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(30)))
+            {
+                TileQueue.Enqueue(new Twitter(tweet));
+            }
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            //Task.Run(() =>
+            //{
+            //    Thread.Sleep(5000);
+            //    foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(30)))
+            //    {
+            //        TileQueue.Enqueue(new Twitter(tweet));
+            //        Thread.Sleep(10000);
+            //    }
+            //});
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            return true;
+#endif
+            return false;
         }
     }
 }

@@ -6,6 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="avalonia-logo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="avalonia-logo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.0-preview4" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0-preview4" />
   </ItemGroup>

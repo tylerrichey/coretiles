@@ -20,6 +20,8 @@ namespace CoreTiles.Desktop
         {
             try
             {
+                //todo re-factor this as a standard tile plugin; implement "mini-tiles"?
+                //todo add way for standard plugin to display status as "mini-tile" or menu item
                 Weather = new Weather();
                 tilePluginsList = GetTilePlugins().Distinct()
                     .ToList();

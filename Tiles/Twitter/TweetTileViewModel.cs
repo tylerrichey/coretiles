@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using ImageViewerWindow;
 using ReactiveUI;
 using System;
@@ -23,7 +24,7 @@ namespace CoreTiles.Tiles
         public string StatsCount { get; }
         public string FavoriteCount { get; }
         public string PhotoButtonLabel { get; }
-        public ReactiveCommand<Unit, Unit> PhotoCommand { get; }
+        public ReactiveCommand<Unit, Task> PhotoCommand { get; }
         public ReactiveCommand<Unit, Unit> VideoCommand { get; }
         public bool PhotoButtonEnabled { get; }
         public bool VideoButtonEnabled { get; }
@@ -45,16 +46,19 @@ namespace CoreTiles.Tiles
             StatsCount = stats > 0 ? "🔁" + stats : string.Empty;
             FavoriteCount = tweet.FavoriteCount > 0 ? "❤️" + tweet.FavoriteCount : string.Empty;
             var photos = tweet.Media.Where(m => m.MediaType == "photo");
-            PhotoButtonLabel = photos.Count() > 1 ? "Photo(s)" : "Photo";
+            PhotoButtonLabel = photos.Count() > 1 ? "Photos" : "Photo";
             PhotoButtonEnabled = photos.Any();
-            PhotoCommand = ReactiveCommand.Create(() =>
+            PhotoCommand = ReactiveCommand.Create(async () =>
             {
-                var viewModel = new ImageViewerViewModel(photos.Select(u => u.MediaURL));
+                using var viewModel = new ImageViewerViewModel(photos.Select(u => u.MediaURL));
                 var imageViewer = new ImageViewer
                 {
                     DataContext = viewModel
                 };
-                imageViewer.Show();
+                //this seems hacky, but the window is required to pass to ShowDialog to get something returned
+                //to wait on the window to close so things are disposed of properly
+                var window = new Window();
+                await imageViewer.ShowDialog(window);
             });
             VideoButtonEnabled = tweet.Media.Any(v => v.MediaType == "video");
             if (VideoButtonEnabled)
@@ -109,6 +113,8 @@ namespace CoreTiles.Tiles
         //     need one textblock with inline color, which is not available
         //     perhaps try highlighting with emoji?
         //     nope, is not effective, has to be done in avalonia i think
+        //     need to ask before, but maybe a combo of wrappanels and stackpanels could highlight and
+        //     handle newline issue that comes with using a bunch of textblocks to get the formatting
         //private static IEnumerable<TextBlock> TweetTextToBlocks(string tweet)
         //{
         //    var highlight = new List<string>

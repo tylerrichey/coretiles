@@ -19,7 +19,7 @@
       <Setter Property="Cursor" Value="Hand" />
     </Style>
   </UserControl.Styles>
-  <Border Background="#495057" Padding="4" Margin="4" CornerRadius="3" BorderThickness="2" BorderBrush="#53c2c2">
+  <Border Background="#495057" Padding="4" Margin="4" CornerRadius="3" BorderThickness="2" BorderBrush="#1da1f2">
     <StackPanel ClipToBounds="True">
       <WrapPanel Name="NamePanel" Orientation="Horizontal" Cursor="Hand">
         <TextBlock Foreground="OrangeRed" Text="{Binding ScreenName}" />
