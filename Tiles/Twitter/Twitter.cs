@@ -10,6 +10,9 @@ using System;
 using Tweetinvi.Models;
 using System.IO;
 using Tweetinvi.Models.DTO;
+using ReactiveUI;
+using Avalonia;
+using Avalonia.Platform;
 
 namespace CoreTiles.Tiles
 {
@@ -17,6 +20,9 @@ namespace CoreTiles.Tiles
     {
         public override IDataTemplate DataTemplate { get; set; } = new FuncDataTemplate<Twitter>((t, s) 
             => new TweetTile { DataContext = new TweetTileViewModel(t.CurrentTweet) });
+
+        //todo stick with text for now, binding to icon not working, maybe icon not getting added as proper resource
+        public override MenuItem MiniTile => new MenuItem { Header = "Twitter" };
 
         public ITweet CurrentTweet { get; }
 
@@ -31,6 +37,8 @@ namespace CoreTiles.Tiles
             {
                 await InitTweetinvi();
             }
+
+            var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
         }
 
         private async Task InitTweetinvi()

@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\ImageViewerWindow\ImageViewerWindow.csproj" />
     <ProjectReference Include="..\Interface\Tiles.Interface.csproj" />
   </ItemGroup>

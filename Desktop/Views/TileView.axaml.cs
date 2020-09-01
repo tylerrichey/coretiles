@@ -24,8 +24,6 @@ namespace CoreTiles.Desktop.Views
         {
             this.InitializeComponent();
 
-            itemCounterMenuItem.Command = ReactiveCommand.Create(() => scrollViewer.ScrollToHome());
-
             var dataObv = this.GetObservable(Control.DataContextProperty)
                 .OfType<TileViewModel>()
                 .Subscribe(vm =>
@@ -64,6 +62,8 @@ namespace CoreTiles.Desktop.Views
                     var scrollObv = scrollViewer.GetObservable(ScrollViewer.VerticalScrollBarValueProperty)
                         .Subscribe(v => vm.BufferItems = v != 0);
                     disposables.Add(scrollObv);
+
+                    itemCounterMenuItem.Command = ReactiveCommand.Create(() => scrollViewer.ScrollToHome());
                 });
             disposables.Add(dataObv);
         }

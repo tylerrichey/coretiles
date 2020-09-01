@@ -5,20 +5,21 @@
              xmlns:tiles="clr-namespace:CoreTiles.Desktop.Tiles"
              x:Class="CoreTiles.Desktop.Views.TileView">
   <DockPanel>
-    <DockPanel.Styles>
-      <Style Selector="MenuItem">
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontFamily" Value="Cascadia Code PL" />
-      </Style>
-      <Style Selector="MenuItem.RedText">
-        <Setter Property="Foreground" Value="#DC143C" />
-        <Setter Property="FontWeight" Value="Bold" />
-      </Style>
-    </DockPanel.Styles>
-    <Menu DockPanel.Dock="Bottom">
-      <MenuItem Header="{Binding NewItemCounter}" Name="ItemCounterMenuItem" IsVisible="{Binding NewItemCounter}" Classes="RedText" />
-      <MenuItem Header="{Binding TimeDisplay}" />
-      <MenuItem Header="{Binding WeatherData}" />
+    <!--<MenuItem Header="{Binding NewItemCounter}" Name="ItemCounterMenuItem" IsVisible="{Binding NewItemCounter}" Classes="RedText" />-->
+    <Menu DockPanel.Dock="Bottom" Items="{Binding MiniTiles}">
+      <Menu.Styles>
+        <Style Selector="MenuItem">
+          <Setter Property="FontSize" Value="14" />
+          <Setter Property="FontFamily" Value="Cascadia Code PL" />
+          <Setter Property="Header" Value="{Binding Header}" />
+          <Setter Property="Name" Value="{Binding Name}" />
+          <Setter Property="IsVisible" Value="{Binding IsVisible}" />
+        </Style>
+        <Style Selector="MenuItem.RedText">
+          <Setter Property="Foreground" Value="#DC143C" />
+          <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+      </Menu.Styles>
     </Menu>
     <ScrollViewer Name="ScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Background="{Binding WindowBackground}">
       <ItemsControl Items="{Binding Items}">

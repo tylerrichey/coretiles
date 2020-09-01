@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Media;
 using Avalonia.Threading;
 using CoreTiles.Tiles;
@@ -20,7 +21,7 @@ namespace CoreTiles.Desktop.ViewModels
         public ObservableCollection<Tile> Items { get; }
         public ObservableCollection<Tile> ItemsBuffer { get; }
 
-        private int itemsToCache = 250;
+        private int itemsToCache = 100;
         private Services _services;
 
         private double itemWidth = 300;
@@ -58,6 +59,8 @@ namespace CoreTiles.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref newItemCounter, value);
         }
 
+        public ObservableCollection<MenuItem> MiniTiles { get; }
+
         private readonly Timer timer;
 
         public TileViewModel(Services services)
@@ -67,6 +70,7 @@ namespace CoreTiles.Desktop.ViewModels
                 .Subscribe(s => WeatherData = s);
             Items = new ObservableCollection<Tile>();
             ItemsBuffer = new ObservableCollection<Tile>();
+            MiniTiles = new ObservableCollection<MenuItem>();
 
             var then = DateTime.Now.AddSeconds(1);
             timer = new Timer((s) => TimeDisplay = DateTime.Now.ToShortTimeString().Replace(" ", "")
@@ -75,7 +79,31 @@ namespace CoreTiles.Desktop.ViewModels
 
             Process.Execute()
                 .Subscribe();
+
+            //todo this is too much, classes nor name will bind, need to move counter elsewhere i think
+            //     or do a minitile element for real
+            MiniTiles.Add(new MenuItem
+            {
+                [!MenuItem.HeaderProperty] = new Binding("NewItemCounter"),
+                //Name = "ItemCounterMenuItem",
+                [!MenuItem.NameProperty] = new Binding("ItemCounterMenuItem"),
+                [!MenuItem.IsVisibleProperty] = new Binding("NewItemCounter")
+                //Classes = new Classes("RedText")
+            });
+            MiniTiles.Add(new MenuItem
+            {
+                [!MenuItem.HeaderProperty] = new Binding("TimeDisplay")
+            });
+            MiniTiles.Add(new MenuItem
+            {
+                [!MenuItem.HeaderProperty] = new Binding("WeatherData")
+            });
+
+            _services.Tiles
+                .ForEach(t => MiniTiles.Add(t.MiniTile));
         }
+
+        public string ItemCounterMenuItem => "ItemCounterMenuItem";
 
         public int Columns = 3;
         public bool BufferItems = false;

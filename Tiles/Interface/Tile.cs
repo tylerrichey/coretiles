@@ -14,6 +14,7 @@ namespace CoreTiles.Tiles
         public abstract Task Initialize();
         public abstract Window GetConfigurationWindow();
         public abstract IDataTemplate DataTemplate { get; set; }
+        public abstract MenuItem MiniTile { get; }
     }
 
     public interface ITile
