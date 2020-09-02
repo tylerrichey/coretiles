@@ -13,6 +13,8 @@ using Tweetinvi.Models.DTO;
 using ReactiveUI;
 using Avalonia;
 using Avalonia.Platform;
+using Avalonia.Media;
+using System.Reactive.Subjects;
 
 namespace CoreTiles.Tiles
 {
@@ -21,24 +23,30 @@ namespace CoreTiles.Tiles
         public override IDataTemplate DataTemplate { get; set; } = new FuncDataTemplate<Twitter>((t, s) 
             => new TweetTile { DataContext = new TweetTileViewModel(t.CurrentTweet) });
 
-        //todo stick with text for now, binding to icon not working, maybe icon not getting added as proper resource
-        public override MenuItem MiniTile => new MenuItem { Header = "Twitter" };
+        //todo stick with text for now, binding to icon not working
+        public override MenuItem MiniTile
+            => new MenuItem
+            {
+                /*Icon = "/icon.ico",*/
+                [!MenuItem.HeaderProperty] = currentlyConnected.ToBinding(),
+                Foreground = Brush.Parse("#1da1f2")
+            };
 
         public ITweet CurrentTweet { get; }
 
         private Task streamTask;
+        private Subject<string> currentlyConnected = new Subject<string>();
 
         public Twitter() { }
         public Twitter(ITweet tweet) => CurrentTweet = tweet;
 
         public override async Task Initialize()
         {
+            MarkConnected(false);
             if (!await InitDebugEnvironment())
             {
                 await InitTweetinvi();
             }
-
-            var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
         }
 
         private async Task InitTweetinvi()
@@ -63,9 +71,10 @@ namespace CoreTiles.Tiles
                     TileQueue.Enqueue(new Twitter(e.Tweet));
                 }
             };
-            stream.StreamStarted += (s, e) => { };
+            stream.StreamStarted += (s, e) => MarkConnected();
             stream.StreamStopped += (s, e) =>
             {
+                MarkConnected(false);
                 Thread.Sleep(1000);
                 streamTask = stream.StartStreamMatchingAllConditionsAsync();
             };
@@ -79,15 +88,14 @@ namespace CoreTiles.Tiles
             streamTask = stream.StartStreamMatchingAllConditionsAsync();
         }
 
-        public override Window GetConfigurationWindow()
-        {
-            throw new NotImplementedException();
-        }
+        private void MarkConnected(bool connected = true) => currentlyConnected.OnNext((connected ? "✔️" : "❌") + "Twitter");
+
+        public override Window GetConfigurationWindow() => throw new NotImplementedException();
 
         private async Task<bool> InitDebugEnvironment()
         {
 #if DEBUG
-            const string dataFile = @"C:\Users\Tyler\Desktop\Tweets\tweets637332765734054977.json";
+            const string dataFile = "sample.json";
             using var streamReader = new StreamReader(dataFile);
             var json = await streamReader.ReadToEndAsync();
             var tweetDTOs = json.ConvertJsonTo<ITweetDTO[]>();
@@ -96,15 +104,16 @@ namespace CoreTiles.Tiles
                 TileQueue.Enqueue(new Twitter(tweet));
             }
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            //Task.Run(() =>
-            //{
-            //    Thread.Sleep(5000);
-            //    foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(30)))
-            //    {
-            //        TileQueue.Enqueue(new Twitter(tweet));
-            //        Thread.Sleep(10000);
-            //    }
-            //});
+            Task.Run(() =>
+            {
+                Thread.Sleep(5000);
+                foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(30)))
+                {
+                    MarkConnected();
+                    TileQueue.Enqueue(new Twitter(tweet));
+                    Thread.Sleep(5000);
+                }
+            });
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
 #endif

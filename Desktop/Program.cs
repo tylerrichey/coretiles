@@ -8,9 +8,6 @@ namespace CoreTiles.Desktop
 {
     internal static class Program
     {
-        //todo find somewhere to initialize this after avalonia starts up
-        public static Services Services = new Services();
-
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.

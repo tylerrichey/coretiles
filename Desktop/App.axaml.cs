@@ -10,8 +10,6 @@ namespace CoreTiles.Desktop
 {
     public class App : Application
     {
-        //todo fix, because obviously hacky but weird behavior occurs if i instantiate at this point
-        Services _services = Program.Services;
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -23,7 +21,7 @@ namespace CoreTiles.Desktop
             {
                 desktop.MainWindow = new MainWindow
                 {
-                    DataContext = new MainWindowViewModel(_services)
+                    DataContext = new MainWindowViewModel(new Services())
                 };
             }
 

@@ -63,7 +63,7 @@ namespace CoreTiles.Desktop.Views
                         .Subscribe(v => vm.BufferItems = v != 0);
                     disposables.Add(scrollObv);
 
-                    itemCounterMenuItem.Command = ReactiveCommand.Create(() => scrollViewer.ScrollToHome());
+                    //itemCounterMenuItem.Command = ReactiveCommand.Create(() => scrollViewer.ScrollToHome());
                 });
             disposables.Add(dataObv);
         }

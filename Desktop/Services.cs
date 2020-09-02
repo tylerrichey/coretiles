@@ -27,9 +27,9 @@ namespace CoreTiles.Desktop
                     .ToList();
                 Tiles = tilePluginsList.Select(p => Activator.CreateInstance(p) as Tile)
                     .ToList();
-                var initTasks = Tiles.Select(t => t.Initialize())
-                    .ToArray();
-                Task.WaitAll(initTasks);
+                //var initTasks = Tiles.Select(t => t.Initialize())
+                //    .ToArray();
+                //Task.WaitAll(initTasks);
             }
             catch (AggregateException ae)
             {

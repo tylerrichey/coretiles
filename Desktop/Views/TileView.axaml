@@ -5,19 +5,16 @@
              xmlns:tiles="clr-namespace:CoreTiles.Desktop.Tiles"
              x:Class="CoreTiles.Desktop.Views.TileView">
   <DockPanel>
-    <!--<MenuItem Header="{Binding NewItemCounter}" Name="ItemCounterMenuItem" IsVisible="{Binding NewItemCounter}" Classes="RedText" />-->
     <Menu DockPanel.Dock="Bottom" Items="{Binding MiniTiles}">
       <Menu.Styles>
         <Style Selector="MenuItem">
           <Setter Property="FontSize" Value="14" />
           <Setter Property="FontFamily" Value="Cascadia Code PL" />
           <Setter Property="Header" Value="{Binding Header}" />
-          <Setter Property="Name" Value="{Binding Name}" />
+          <Setter Property="Foreground" Value="{Binding Foreground}" />
           <Setter Property="IsVisible" Value="{Binding IsVisible}" />
-        </Style>
-        <Style Selector="MenuItem.RedText">
-          <Setter Property="Foreground" Value="#DC143C" />
-          <Setter Property="FontWeight" Value="Bold" />
+          <Setter Property="FontWeight" Value="{Binding FontWeight}" />
+          <Setter Property="Icon" Value="{Binding Icon}" />
         </Style>
       </Menu.Styles>
     </Menu>

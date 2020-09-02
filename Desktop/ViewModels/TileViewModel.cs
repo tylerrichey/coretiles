@@ -80,15 +80,12 @@ namespace CoreTiles.Desktop.ViewModels
             Process.Execute()
                 .Subscribe();
 
-            //todo this is too much, classes nor name will bind, need to move counter elsewhere i think
-            //     or do a minitile element for real
             MiniTiles.Add(new MenuItem
             {
                 [!MenuItem.HeaderProperty] = new Binding("NewItemCounter"),
-                //Name = "ItemCounterMenuItem",
-                [!MenuItem.NameProperty] = new Binding("ItemCounterMenuItem"),
-                [!MenuItem.IsVisibleProperty] = new Binding("NewItemCounter")
-                //Classes = new Classes("RedText")
+                [!MenuItem.IsVisibleProperty] = new Binding("NewItemCounter"),
+                Foreground = Brush.Parse("#DC143C"),
+                FontWeight = FontWeight.Bold
             });
             MiniTiles.Add(new MenuItem
             {
@@ -101,9 +98,15 @@ namespace CoreTiles.Desktop.ViewModels
 
             _services.Tiles
                 .ForEach(t => MiniTiles.Add(t.MiniTile));
-        }
 
-        public string ItemCounterMenuItem => "ItemCounterMenuItem";
+            ReactiveCommand.Create(async () =>
+            {
+                foreach (var tile in _services.Tiles)
+                {
+                    await tile.Initialize();
+                }
+            }).Execute().Subscribe();
+        }
 
         public int Columns = 3;
         public bool BufferItems = false;
