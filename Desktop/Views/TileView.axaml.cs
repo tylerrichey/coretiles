@@ -17,7 +17,6 @@ namespace CoreTiles.Desktop.Views
     public class TileView : UserControl
     {
         private ScrollViewer scrollViewer => this.FindControl<ScrollViewer>("ScrollViewer");
-        private MenuItem itemCounterMenuItem => this.FindControl<MenuItem>("ItemCounterMenuItem");
         private List<IDisposable> disposables = new List<IDisposable>();
 
         public TileView()
@@ -63,7 +62,8 @@ namespace CoreTiles.Desktop.Views
                         .Subscribe(v => vm.BufferItems = v != 0);
                     disposables.Add(scrollObv);
 
-                    //itemCounterMenuItem.Command = ReactiveCommand.Create(() => scrollViewer.ScrollToHome());
+                    var scrollHomeObv = vm.ScrollToHome.Subscribe(_ => scrollViewer.ScrollToHome());
+                    disposables.Add(scrollHomeObv);
                 });
             disposables.Add(dataObv);
         }

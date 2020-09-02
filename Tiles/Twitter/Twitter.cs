@@ -23,11 +23,11 @@ namespace CoreTiles.Tiles
         public override IDataTemplate DataTemplate { get; set; } = new FuncDataTemplate<Twitter>((t, s) 
             => new TweetTile { DataContext = new TweetTileViewModel(t.CurrentTweet) });
 
-        //todo stick with text for now, binding to icon not working
         public override MenuItem MiniTile
             => new MenuItem
             {
-                /*Icon = "/icon.ico",*/
+                //todo icon doesn't work for some reason
+                Icon = "avares://Tiles.Twitter/icon.ico",
                 [!MenuItem.HeaderProperty] = currentlyConnected.ToBinding(),
                 Foreground = Brush.Parse("#1da1f2")
             };

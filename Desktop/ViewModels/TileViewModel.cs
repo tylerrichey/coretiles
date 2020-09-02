@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,10 +19,12 @@ namespace CoreTiles.Desktop.ViewModels
     //todo something with randomizing the color pallete
     public class TileViewModel : ViewModelBase
     {
-        public ObservableCollection<Tile> Items { get; }
-        public ObservableCollection<Tile> ItemsBuffer { get; }
+        public ObservableCollection<Tile> Items { get; } = new ObservableCollection<Tile>();
+        public ObservableCollection<Tile> ItemsBuffer { get; } = new ObservableCollection<Tile>();
+        public ObservableCollection<MenuItem> MiniTiles { get; } = new ObservableCollection<MenuItem>();
+        public Subject<bool> ScrollToHome { get; } = new Subject<bool>();
 
-        private int itemsToCache = 100;
+        private const int itemsToCache = 35;
         private Services _services;
 
         private double itemWidth = 300;
@@ -44,13 +47,7 @@ namespace CoreTiles.Desktop.ViewModels
             get => weatherData;
             set => this.RaiseAndSetIfChanged(ref weatherData, value);
         }
-
-        private string timeDisplay = DateTime.Now.ToShortTimeString().Replace(" ", "");
-        public string TimeDisplay
-        {
-            get => timeDisplay;
-            set => this.RaiseAndSetIfChanged(ref timeDisplay, value);
-        }
+        public string TimeDisplay => DateTime.Now.ToShortTimeString().Replace(" ", "");
 
         private int newItemCounter;
         public int NewItemCounter
@@ -59,33 +56,34 @@ namespace CoreTiles.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref newItemCounter, value);
         }
 
-        public ObservableCollection<MenuItem> MiniTiles { get; }
-
-        private readonly Timer timer;
-
         public TileViewModel(Services services)
         {
             _services = services;
             _services.Weather.StartMonitoring()
                 .Subscribe(s => WeatherData = s);
-            Items = new ObservableCollection<Tile>();
-            ItemsBuffer = new ObservableCollection<Tile>();
-            MiniTiles = new ObservableCollection<MenuItem>();
 
-            var then = DateTime.Now.AddSeconds(1);
-            timer = new Timer((s) => TimeDisplay = DateTime.Now.ToShortTimeString().Replace(" ", "")
-                ,null, new DateTime(then.Year, then.Month, then.Day, then.Hour, then.Minute, then.Second) - DateTime.Now
-                ,TimeSpan.FromMinutes(1));
+            //this feels wrong, but is effective
+            _ = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    this.RaisePropertyChanged(nameof(TimeDisplay));
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                }
+            });
 
             Process.Execute()
                 .Subscribe();
+            //todo some kind of app wide error handling, this does nothing
+            Process.ThrownExceptions.Subscribe(e => throw e);
 
             MiniTiles.Add(new MenuItem
             {
                 [!MenuItem.HeaderProperty] = new Binding("NewItemCounter"),
                 [!MenuItem.IsVisibleProperty] = new Binding("NewItemCounter"),
                 Foreground = Brush.Parse("#DC143C"),
-                FontWeight = FontWeight.Bold
+                FontWeight = FontWeight.Bold,
+                Command = ReactiveCommand.Create(() => ScrollToHome.OnNext(true))
             });
             MiniTiles.Add(new MenuItem
             {
@@ -156,6 +154,7 @@ namespace CoreTiles.Desktop.ViewModels
             if (Items.Count == itemsToCache)
             {
                 Enumerable.Range(itemsToCache - 1 - Columns, Columns)
+                    .Reverse()
                     .ToList()
                     .ForEach(i => Items.RemoveAt(i));
             }
