@@ -21,7 +21,7 @@ namespace CoreTiles.Desktop.ViewModels
     {
         public ObservableCollection<Tile> Items { get; } = new ObservableCollection<Tile>();
         public ObservableCollection<Tile> ItemsBuffer { get; } = new ObservableCollection<Tile>();
-        public ObservableCollection<MenuItem> MiniTiles { get; } = new ObservableCollection<MenuItem>();
+        public ObservableCollection<MenuItem> MiniTiles { get; internal set; } = new ObservableCollection<MenuItem>();
         public Subject<bool> ScrollToHome { get; } = new Subject<bool>();
 
         private const int itemsToCache = 100;
@@ -55,6 +55,8 @@ namespace CoreTiles.Desktop.ViewModels
             get => newItemCounter;
             set => this.RaiseAndSetIfChanged(ref newItemCounter, value);
         }
+
+        internal TileViewModel() { }
 
         public TileViewModel(Services services)
         {

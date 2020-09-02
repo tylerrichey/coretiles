@@ -95,6 +95,8 @@ namespace CoreTiles.Tiles
         private async Task<bool> InitDebugEnvironment()
         {
 #if DEBUG
+            return true;
+
             const string dataFile = "sample.json";
             using var streamReader = new StreamReader(dataFile);
             var json = await streamReader.ReadToEndAsync();

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0-preview4" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0-preview5" />
     <PackageReference Include="TweetinviAPI" Version="4.0.3" />
   </ItemGroup>
 

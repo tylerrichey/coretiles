@@ -2,6 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:dd="clr-namespace:CoreTiles.Desktop.InternalServices;assembly=CoreTiles.Desktop"
+             Design.DataContext="{x:Static dd:DesignData.TileViewModel}"
              xmlns:tiles="clr-namespace:CoreTiles.Desktop.Tiles"
              x:Class="CoreTiles.Desktop.Views.TileView">
   <DockPanel>
@@ -10,11 +12,6 @@
         <Style Selector="MenuItem">
           <Setter Property="FontSize" Value="14" />
           <Setter Property="FontFamily" Value="Cascadia Code PL" />
-          <Setter Property="Header" Value="{Binding Header}" />
-          <Setter Property="Foreground" Value="{Binding Foreground}" />
-          <Setter Property="IsVisible" Value="{Binding IsVisible}" />
-          <Setter Property="FontWeight" Value="{Binding FontWeight}" />
-          <Setter Property="Icon" Value="{Binding Icon}" />
         </Style>
       </Menu.Styles>
     </Menu>

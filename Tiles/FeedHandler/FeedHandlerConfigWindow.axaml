@@ -1,0 +1,65 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dd="clr-namespace:Tiles.FeedHandler;assembly=Tiles.FeedHandler"
+        Design.DataContext="{x:Static dd:DesignData.FeedHandlerConfigWindowViewModel}"
+        Height="400" Width="600"
+        Title="Feed Handler Configuration"
+        Icon="/avalonia-logo.ico"
+        x:Class="Tiles.FeedHandler.FeedHandlerConfigWindow">
+  <Window.Styles>
+    <Style Selector="TextBlock">
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontFamily" Value="Cascadia Code PL" />
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="Padding" Value="3" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontFamily" Value="Cascadia Code PL" />
+    </Style>
+    <Style Selector="Button">
+      <Setter Property="Padding" Value="5" />
+      <Setter Property="Margin" Value="4" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontFamily" Value="Cascadia Code PL" />
+    </Style>
+  </Window.Styles>
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <DockPanel>
+      <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
+        <Button Command="{Binding AddItem}">
+          Add
+        </Button>
+        <Button Command="{Binding SaveItems}">
+          Save
+        </Button>
+      </StackPanel>
+      <ItemsControl Items="{Binding Feeds}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Vertical" Margin="8" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Grid ColumnDefinitions="20*,80*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="6">
+              <TextBlock Grid.Column="0" Grid.Row="0" Text="Url:" VerticalAlignment="Center" />
+              <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Url}" VerticalAlignment="Center"/>
+              <TextBlock Grid.Column="0" Grid.Row="1" Text="Check Every:" VerticalAlignment="Center"/>
+              <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding CheckEveryMinutes}" VerticalAlignment="Center"/>
+              <TextBlock Grid.Column="0" Grid.Row="2" Text="Enabled:" VerticalAlignment="Center"/>
+              <CheckBox Grid.Column="1" Grid.Row="2" IsChecked="{Binding Enabled}" VerticalAlignment="Center"/>
+              <TextBlock Grid.Column="0" Grid.Row="3" Text="Regex:" VerticalAlignment="Center" />
+              <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Regex}" VerticalAlignment="Center"/>
+              <Button Grid.Column="1" Grid.Row="4" Command="{Binding $parent[2].DelItem}" CommandParameter="{Binding Url}">
+                Remove
+              </Button>
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </DockPanel>
+  </ScrollViewer>
+</Window>
