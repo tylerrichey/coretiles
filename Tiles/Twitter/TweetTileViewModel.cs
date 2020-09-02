@@ -17,21 +17,23 @@ namespace CoreTiles.Tiles
 {
     public class TweetTileViewModel : ReactiveObject
     {
-        public string ScreenName { get; }
-        public string Name { get; }
-        public string TweetText { get; }
-        public string TweetTime { get; }
-        public string StatsCount { get; }
-        public string FavoriteCount { get; }
-        public string PhotoButtonLabel { get; }
-        public ReactiveCommand<Unit, Task> PhotoCommand { get; }
-        public ReactiveCommand<Unit, Unit> VideoCommand { get; }
-        public bool PhotoButtonEnabled { get; }
-        public bool VideoButtonEnabled { get; }
-        public string ProfileUrl { get; }
-        public string TweetUrl { get; }
-        public string StatsUrl { get; }
+        public string ScreenName { get; set; }
+        public string Name { get; set; }
+        public string TweetText { get; set; }
+        public string TweetTime { get; set; }
+        public string StatsCount { get; set; }
+        public string FavoriteCount { get; set; }
+        public string PhotoButtonLabel { get; set; }
+        public ReactiveCommand<Unit, Task> PhotoCommand { get; set; }
+        public ReactiveCommand<Unit, Unit> VideoCommand { get; set; }
+        public bool PhotoButtonEnabled { get; set; }
+        public bool VideoButtonEnabled { get; set; }
+        public string ProfileUrl { get; set; }
+        public string TweetUrl { get; set; }
+        public string StatsUrl { get; set; }
         public IControl QuoteTweet { get; }
+
+        public TweetTileViewModel() { }
 
         public TweetTileViewModel(ITweet tweet)
         {

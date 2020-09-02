@@ -24,7 +24,7 @@ namespace CoreTiles.Desktop.ViewModels
         public ObservableCollection<MenuItem> MiniTiles { get; } = new ObservableCollection<MenuItem>();
         public Subject<bool> ScrollToHome { get; } = new Subject<bool>();
 
-        private const int itemsToCache = 35;
+        private const int itemsToCache = 100;
         private Services _services;
 
         private double itemWidth = 300;

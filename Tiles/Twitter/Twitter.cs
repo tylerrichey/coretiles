@@ -99,7 +99,7 @@ namespace CoreTiles.Tiles
             using var streamReader = new StreamReader(dataFile);
             var json = await streamReader.ReadToEndAsync();
             var tweetDTOs = json.ConvertJsonTo<ITweetDTO[]>();
-            foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(30)))
+            foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(100)))
             {
                 TileQueue.Enqueue(new Twitter(tweet));
             }
@@ -107,11 +107,11 @@ namespace CoreTiles.Tiles
             Task.Run(() =>
             {
                 Thread.Sleep(5000);
-                foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(30)))
+                foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(200)))
                 {
                     MarkConnected();
                     TileQueue.Enqueue(new Twitter(tweet));
-                    Thread.Sleep(5000);
+                    Thread.Sleep(1000);
                 }
             });
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
