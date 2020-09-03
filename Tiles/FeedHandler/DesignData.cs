@@ -18,26 +18,23 @@ namespace Tiles.FeedHandler
                 PublishDate = DateTime.Now
             });
 
-        public static FeedHandlerConfigWindowViewModel FeedHandlerConfigWindowViewModel { get; } =
-            new FeedHandlerConfigWindowViewModel
+        public static FeedHandlerConfigWindowViewModel FeedHandlerConfigWindowViewModel
+        {
+            get
             {
-                Feeds = new ObservableCollection<FeedHandlerConfig>
+                var vm = new FeedHandlerConfigWindowViewModel(new List<string>
                 {
-                    new FeedHandlerConfig
-                    {
-                        Url = "https://www.reddit.com/r/LiverpoolFC/new/.rss",
-                        CheckEveryMinutes = 5,
-                        Enabled = true,
-                        Regex = ".*"
-                    },
-                    new FeedHandlerConfig
-                    {
-                        Url = "https://www.reddit.com/r/WatchURaffle/new/.rss",
-                        CheckEveryMinutes = 10,
-                        Enabled = false,
-                        Regex = ".*(?i)(iwc|omega|rolex).*"
-                    }
-                }
-            };
+                    "Hello this is log",
+                    "hi this is another log",
+                    "bye this is log no more"
+                });
+                vm.Feeds = new ObservableCollection<FeedHandlerConfig>
+                {
+                    new FeedHandlerConfig { Url = "https://www.reddit.com/r/LiverpoolFC/new/.rss", CheckEveryMinutes = 5, Enabled = true, Regex = ".*" },
+                    new FeedHandlerConfig { Url = "https://www.reddit.com/r/WatchURaffle/new/.rss", CheckEveryMinutes = 10, Enabled = false, Regex = ".*(?i)(iwc|omega|rolex).*" }
+                 };
+                return vm;
+            }
+        }
     }
 }

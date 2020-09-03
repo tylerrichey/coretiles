@@ -1,6 +1,8 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using System.Reactive.Linq;
 
 namespace Tiles.FeedHandler
 {
@@ -17,6 +19,10 @@ namespace Tiles.FeedHandler
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+
+            _ = this.GetObservable(Window.DataContextProperty)
+                .OfType<FeedHandlerConfigWindowViewModel>()
+                .Subscribe(vm => _ = vm.CloseWindow.Subscribe(reloadHandlers => this.Close(reloadHandlers)));
         }
     }
 }

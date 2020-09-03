@@ -1,7 +1,13 @@
-﻿using CoreTiles.Tiles;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Templates;
+using CoreTiles.Tiles;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
@@ -9,16 +15,28 @@ using System.Threading.Tasks;
 
 namespace CoreTiles.Desktop.InternalServices
 {
-    public class Weather
+    public class Weather : Tile
     {
-#pragma warning disable RCS1213 // Remove unused member declaration.
-        private Timer timer;
-#pragma warning restore RCS1213 // Remove unused member declaration.
-        public Subject<string> InfoLine { get; } = new Subject<string>();
+        //todo implement tile for changes?
+        public override IDataTemplate DataTemplate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        //todo config
+        private const string weatherUrl = @"https://www.wunderground.com/weather/us/wa/seattle/KWASEATT2097";
+        private Subject<string> infoLine { get; } = new Subject<string>();
+        public override MenuItem MiniTile => new MenuItem
+        {
+            [!MenuItem.HeaderProperty] = infoLine.ToBinding(),
+            CommandParameter = weatherUrl,
+            Command = ReactiveCommand.Create<string>(url => Process.Start(new ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            }))
+        };
 
         private async Task<(int, string)> GetWeatherWunderground()
         {
-            using var req = new HttpRequestMessage(HttpMethod.Get, "https://www.wunderground.com/weather/us/wa/seattle/KWASEATT2097");
+            using var req = new HttpRequestMessage(HttpMethod.Get, weatherUrl);
             req.Headers.Add("User-Agent", "curl");
             var response = await Helpers.HttpClient.SendAsync(req);
             var data = await response.Content.ReadAsStringAsync();
@@ -29,47 +47,58 @@ namespace CoreTiles.Desktop.InternalServices
             return (Convert.ToInt32(temp), conditions);
         }
 
-        public Subject<string> StartMonitoring()
+        public override Task Initialize()
         {
-#if !DEBUG
-            timer ??= new Timer(async (s) =>
+            infoLine.OnNext("No Weather Data");
+            _ = Task.Run(async () =>
             {
-                try
+                while (true)
                 {
-                    var _infoLine = string.Empty;
-                    var data = await GetWeatherWunderground();
-                    _infoLine = data.Item1 + "°";
-                    var forecast = data.Item2.Trim().ToLower();
-                    if (forecast.Contains("partly"))
+                    try
                     {
-                        _infoLine += "⛅";
+                        var _infoLine = string.Empty;
+                        var data = await GetWeatherWunderground();
+                        _infoLine = data.Item1 + "°";
+                        var forecast = data.Item2.Trim().ToLower();
+                        if (forecast.Contains("partly"))
+                        {
+                            _infoLine += "⛅";
+                        }
+                        else if (forecast.Contains("rain"))
+                        {
+                            _infoLine += "🌧";
+                        }
+                        else if (forecast.Contains("cloud"))
+                        {
+                            _infoLine += "☁️";
+                        }
+                        else if (forecast.Contains("sun"))
+                        {
+                            _infoLine += "☀️";
+                        }
+                        else if ((forecast.Contains("clear") || forecast.Contains("fair")) && DateTime.Now.Hour > 6 && DateTime.Now.Hour < 20)
+                        {
+                            _infoLine += "☀️";
+                        }
+                        else
+                        {
+                            _infoLine += "🌙";
+                        }
+                        infoLine.OnNext(_infoLine);
                     }
-                    else if (forecast.Contains("rain"))
+                    catch
                     {
-                        _infoLine += "🌧";
+                        var last = await infoLine.LastOrDefaultAsync();
+                        infoLine.OnNext("❌" + last);
                     }
-                    else if (forecast.Contains("cloud"))
+                    finally
                     {
-                        _infoLine += "☁️";
+                        await Task.Delay(TimeSpan.FromMinutes(15));
                     }
-                    else if (forecast.Contains("sun"))
-                    {
-                        _infoLine += "☀️";
-                    }
-                    else if ((forecast.Contains("clear") || forecast.Contains("fair")) && DateTime.Now.Hour > 6 && DateTime.Now.Hour < 20)
-                    {
-                        _infoLine += "☀️";
-                    }
-                    else
-                    {
-                        _infoLine += "🌙";
-                    }
-                    InfoLine.OnNext(_infoLine);
                 }
-                catch { }
-            }, null, TimeSpan.Zero, TimeSpan.FromMinutes(15));
-#endif
-            return InfoLine;
+            });
+
+            return Task.CompletedTask;
         }
     }
 }

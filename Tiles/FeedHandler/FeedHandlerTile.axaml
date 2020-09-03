@@ -26,6 +26,9 @@
   <Border Background="#495057" Padding="4" Margin="4" CornerRadius="3" BorderThickness="2" BorderBrush="#ff4500">
     <StackPanel ClipToBounds="True">
       <TextBlock Text="{Binding Title}" FontStyle="Italic" />
+      <Button HorizontalAlignment="Left" Command="{Binding LaunchUrl}" CommandParameter="{Binding Link}">
+        View
+      </Button>
       <!--<TextBlock Text="{Binding Content}" />-->
       <Separator BorderThickness="1" Background="#ff4500"/>
       <TextBlock Text="{Binding PublishDate}" />

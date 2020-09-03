@@ -1,6 +1,8 @@
 ﻿using FeedParserCore;
 using ReactiveUI;
 using System;
+using System.Diagnostics;
+using System.Reactive;
 
 namespace Tiles.FeedHandler
 {
@@ -11,6 +13,8 @@ namespace Tiles.FeedHandler
         public string Content { get; }
         public string PublishDate { get; }
 
+        public ReactiveCommand<string, Unit> LaunchUrl { get; }
+
         public FeedHandlerViewModel(FeedItem feedItem)
         {
             var content = feedItem.Content.Length > 400 ? feedItem.Content.Substring(0, 397) + "..." : feedItem.Content;
@@ -18,6 +22,11 @@ namespace Tiles.FeedHandler
             Title = feedItem.Title;
             Content = content;
             PublishDate = "⏰ " + feedItem.PublishDate.ToString();
+            LaunchUrl = ReactiveCommand.Create<string>(url => Process.Start(new ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            }));
         }
     }
 }

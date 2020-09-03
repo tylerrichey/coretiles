@@ -24,7 +24,8 @@ namespace CoreTiles.Desktop.ViewModels
         public ObservableCollection<MenuItem> MiniTiles { get; internal set; } = new ObservableCollection<MenuItem>();
         public Subject<bool> ScrollToHome { get; } = new Subject<bool>();
 
-        private const int itemsToCache = 100;
+        //todo make global config item and/or implement lazy loading?
+        private const int itemsToCache = 50;
         private Services _services;
 
         private double itemWidth = 300;
@@ -41,12 +42,6 @@ namespace CoreTiles.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref windowBackground, value);
         }
 
-        private string weatherData = "No Weather Data";
-        public string WeatherData
-        {
-            get => weatherData;
-            set => this.RaiseAndSetIfChanged(ref weatherData, value);
-        }
         public string TimeDisplay => DateTime.Now.ToShortTimeString().Replace(" ", "");
 
         private int newItemCounter;
@@ -61,8 +56,6 @@ namespace CoreTiles.Desktop.ViewModels
         public TileViewModel(Services services)
         {
             _services = services;
-            _services.Weather.StartMonitoring()
-                .Subscribe(s => WeatherData = s);
 
             //this feels wrong, but is effective
             _ = Task.Run(async () =>
@@ -90,10 +83,6 @@ namespace CoreTiles.Desktop.ViewModels
             MiniTiles.Add(new MenuItem
             {
                 [!MenuItem.HeaderProperty] = new Binding("TimeDisplay")
-            });
-            MiniTiles.Add(new MenuItem
-            {
-                [!MenuItem.HeaderProperty] = new Binding("WeatherData")
             });
 
             _services.Tiles

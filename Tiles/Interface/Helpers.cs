@@ -13,9 +13,6 @@ namespace CoreTiles.Tiles
         public static string GetConfigDirectory()
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CoreTiles");
 
-        //public static string GetConfigDirectory()
-        //    => Path.Combine(".", "CoreTiles");
-
         public static async Task SaveConfigFile<T>(T config, string name)
         {
             try

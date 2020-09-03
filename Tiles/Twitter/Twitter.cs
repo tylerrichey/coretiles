@@ -15,6 +15,7 @@ using Avalonia;
 using Avalonia.Platform;
 using Avalonia.Media;
 using System.Reactive.Subjects;
+using Avalonia.Media.Imaging;
 
 namespace CoreTiles.Tiles
 {
@@ -26,16 +27,17 @@ namespace CoreTiles.Tiles
         public override MenuItem MiniTile
             => new MenuItem
             {
-                //todo icon doesn't work for some reason
-                Icon = "avares://Tiles.Twitter/icon.ico",
+                //todo not sure about icons, seems like they don't work at the top level, need to test in green field
+                //Icon = new Bitmap(assets.Open(new Uri("avares://Tiles.Twitter/icon.ico"))),
                 [!MenuItem.HeaderProperty] = currentlyConnected.ToBinding(),
                 Foreground = Brush.Parse("#1da1f2")
             };
 
         public ITweet CurrentTweet { get; }
 
-        private Task streamTask;
         private Subject<string> currentlyConnected = new Subject<string>();
+
+        private static IAssetLoader assets => AvaloniaLocator.Current.GetService<IAssetLoader>();
 
         public Twitter() { }
         public Twitter(ITweet tweet) => CurrentTweet = tweet;
@@ -76,21 +78,19 @@ namespace CoreTiles.Tiles
             {
                 MarkConnected(false);
                 Thread.Sleep(1000);
-                streamTask = stream.StartStreamMatchingAllConditionsAsync();
+                _ = stream.StartStreamMatchingAllConditionsAsync();
             };
 
-            var currentTimeline = await User.GetAuthenticatedUser().GetHomeTimelineAsync();
+            var currentTimeline = await User.GetAuthenticatedUser().GetHomeTimelineAsync(20);
             foreach (var t in currentTimeline.OrderBy(c => c.CreatedAt))
             {
                 TileQueue.Enqueue(new Twitter(t));
             }
 
-            streamTask = stream.StartStreamMatchingAllConditionsAsync();
+            _ = stream.StartStreamMatchingAllConditionsAsync();
         }
 
         private void MarkConnected(bool connected = true) => currentlyConnected.OnNext((connected ? "✔️" : "❌") + "Twitter");
-
-        public override Window GetConfigurationWindow() => throw new NotImplementedException();
 
         private async Task<bool> InitDebugEnvironment()
         {
@@ -101,21 +101,21 @@ namespace CoreTiles.Tiles
             using var streamReader = new StreamReader(dataFile);
             var json = await streamReader.ReadToEndAsync();
             var tweetDTOs = json.ConvertJsonTo<ITweetDTO[]>();
-            foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(100)))
+            foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(30)))
             {
                 TileQueue.Enqueue(new Twitter(tweet));
             }
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            Task.Run(() =>
-            {
-                Thread.Sleep(5000);
-                foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(200)))
-                {
-                    MarkConnected();
-                    TileQueue.Enqueue(new Twitter(tweet));
-                    Thread.Sleep(1000);
-                }
-            });
+            //Task.Run(() =>
+            //{
+            //    Thread.Sleep(5000);
+            //    foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(200)))
+            //    {
+            //        MarkConnected();
+            //        TileQueue.Enqueue(new Twitter(tweet));
+            //        Thread.Sleep(1000);
+            //    }
+            //});
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
 #endif

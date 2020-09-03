@@ -12,7 +12,6 @@ namespace CoreTiles.Tiles
         public ConcurrentQueue<Tile> TileQueue { get; set; } = new ConcurrentQueue<Tile>();
 
         public abstract Task Initialize();
-        public abstract Window GetConfigurationWindow();
         public abstract IDataTemplate DataTemplate { get; set; }
         public abstract MenuItem MiniTile { get; }
     }
@@ -20,6 +19,5 @@ namespace CoreTiles.Tiles
     public interface ITile
     {
         Task Initialize();
-        Window GetConfigurationWindow();
     }
 }

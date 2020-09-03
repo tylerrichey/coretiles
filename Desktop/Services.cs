@@ -13,18 +13,14 @@ namespace CoreTiles.Desktop
     public class Services
     {
         private List<Type> tilePluginsList = new List<Type>();
-        public Weather Weather;
         public List<Tile> Tiles { get; }
 
         public Services()
         {
             try
             {
-                //todo re-factor this as a standard tile plugin; implement "mini-tiles"?
-                //todo add way for standard plugin to display status as "mini-tile" or menu item
-                Weather = new Weather();
-                tilePluginsList = GetTilePlugins().Distinct()
-                    .ToList();
+                tilePluginsList.Add(typeof(Weather));
+                tilePluginsList.AddRange(GetTilePlugins().Distinct());
                 Tiles = tilePluginsList.Select(p => Activator.CreateInstance(p) as Tile)
                     .ToList();
             }

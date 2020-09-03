@@ -9,6 +9,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -22,22 +23,27 @@ namespace Tiles.FeedHandler
 
         public override MenuItem MiniTile => new MenuItem
         {
-            Header = "Feeds!",
+            [!MenuItem.HeaderProperty] = menuTileString.ToBinding(),
             Foreground = Brush.Parse("#ff4500"),
             Command = ReactiveCommand.Create(async () =>
             {
                 var window = new FeedHandlerConfigWindow
                 {
-                    DataContext = new FeedHandlerConfigWindowViewModel()
+                    DataContext = new FeedHandlerConfigWindowViewModel(logEntries)
                 };
-                if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
+                    && await window.ShowDialog<bool>(desktop.MainWindow))
                 {
-                    await window.ShowDialog(desktop.MainWindow);
+                    logEntries.Add($"{DateTime.Now} - Restarting feed handlers...");
+                    InitializeFeedHandlers();
                 }
             })
         };
 
-        public override Window GetConfigurationWindow() => throw new NotImplementedException();
+        private Subject<string> menuTileString = new Subject<string>();
+        //todo make observable and/or more robust?
+        private List<string> logEntries = new List<string>();
+        private Task feedHandlerTask;
 
         public FeedItem CurrentItem { get; }
         public FeedHandler(FeedItem feedItem) => CurrentItem = feedItem;
@@ -47,35 +53,60 @@ namespace Tiles.FeedHandler
         {
             FeedParser.SetHttpClient(Helpers.HttpClient);
 
-            _ = Task.Run(async () =>
-            {
-                //var lastSuccessfulCheck = DateTime.Now;
-                var lastSuccessfulCheck = DateTime.MinValue;
-                var regex = ".*(?i)(iwc|omega|rolex).*";
-                while (true)
-                {
-                    //var feed = await FeedParser.ParseAsync("https://www.reddit.com/r/WatchURaffle/new/.rss", FeedType.Atom);
+#if DEBUG
+            return Task.CompletedTask;
+#endif
 
-                    //foreach(var i in feed)
-                    //{
-                    //    TileQueue.Enqueue(new FeedHandler(i));
-                    //}
-
-                    //var items = feed.Where(i => i.PublishDate > lastSuccessfulCheck && Regex.IsMatch(i.Title, regex));
-                    //if (items.Any())
-                    //{
-                    //    lastSuccessfulCheck = items.Max(i => i.PublishDate);
-                    //    foreach (var i in items)
-                    //    {
-                    //        TileQueue.Enqueue(new FeedHandler(i));
-                    //    }
-                    //}
-
-                    await Task.Delay(TimeSpan.FromMinutes(5));
-                }
-            });
+            InitializeFeedHandlers();
 
             return Task.CompletedTask;
+        }
+
+        private void InitializeFeedHandlers()
+        {
+            feedHandlerTask = Task.Run(async () =>
+            {
+                const string configName = "FeedHandlerConfig";
+                var config = await Helpers.LoadConfigFile<List<FeedHandlerConfig>>(configName);
+
+                //todo enable on config save too
+                foreach (var f in config.Where(c => c.Enabled))
+                {
+                    //todo update status to menuitem
+                    _ = Task.Run(async () =>
+                    {
+                        var lastSuccessfulCheck = DateTime.Now;
+                        while (true)
+                        {
+                            try
+                            {
+                                //todo make type a config option?
+                                var feed = await FeedParser.ParseAsync(f.Url, FeedType.Atom);
+
+                                var items = feed.Where(i => i.PublishDate > lastSuccessfulCheck && Regex.IsMatch(i.Title, f.Regex))
+                                    .ToList();
+                                if (items.Count > 0)
+                                {
+                                    foreach (var i in items)
+                                    {
+                                        TileQueue.Enqueue(new FeedHandler(i));
+                                    }
+                                    lastSuccessfulCheck = items.Max(i => i.PublishDate);
+                                }
+                                logEntries.Add($"{DateTime.Now} - Successful check for {f.Url} - Items retrieved: {feed.Count()} - Items displayed: {items.Count}");
+                                menuTileString.OnNext("✔️Feeds!");
+                            }
+                            catch (Exception e)
+                            {
+                                logEntries.Add($"{DateTime.Now} - Exception for {f.Url} - {e.Message}");
+                                menuTileString.OnNext("❌Feeds!");
+                            }
+
+                            await Task.Delay(TimeSpan.FromMinutes(f.CheckEveryMinutes));
+                        }
+                    });
+                }
+            });
         }
     }
 }

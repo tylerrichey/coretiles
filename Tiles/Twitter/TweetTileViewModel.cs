@@ -1,11 +1,13 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media.Imaging;
 using ImageViewerWindow;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reactive;
@@ -47,21 +49,7 @@ namespace CoreTiles.Tiles
             var stats = tweet.RetweetCount + tweet.ReplyCount.GetValueOrDefault() + tweet.QuoteCount.GetValueOrDefault();
             StatsCount = stats > 0 ? "🔁" + stats : string.Empty;
             FavoriteCount = tweet.FavoriteCount > 0 ? "❤️" + tweet.FavoriteCount : string.Empty;
-            var photos = tweet.Media.Where(m => m.MediaType == "photo");
-            PhotoButtonLabel = photos.Count() > 1 ? "Photos" : "Photo";
-            PhotoButtonEnabled = photos.Any();
-            PhotoCommand = ReactiveCommand.Create(async () =>
-            {
-                using var viewModel = new ImageViewerViewModel(photos.Select(u => u.MediaURL));
-                var imageViewer = new ImageViewer
-                {
-                    DataContext = viewModel
-                };
-                //this seems hacky, but the window is required to pass to ShowDialog to get something returned
-                //to wait on the window to close so things are disposed of properly
-                var window = new Window();
-                await imageViewer.ShowDialog(window);
-            });
+            
             VideoButtonEnabled = tweet.Media.Any(v => v.MediaType == "video");
             if (VideoButtonEnabled)
             {
@@ -83,6 +71,24 @@ namespace CoreTiles.Tiles
                     });
                 });
             }
+
+            var photos = tweet.Media.Where(m => m.MediaType == "photo");
+            PhotoButtonLabel = photos.Count() > 1 ? "Photos" : "Photo";
+            PhotoButtonEnabled = photos.Any();
+            PhotoCommand = ReactiveCommand.Create(async () =>
+            {
+                using var viewModel = new ImageViewerViewModel(photos.Select(u => u.MediaURL));
+                var imageViewer = new ImageViewer
+                {
+                    DataContext = viewModel
+                };
+                //this seems hacky, but the window is required to pass to ShowDialog to get something returned
+                //to wait on the window to close so things are disposed of properly
+                //if you pass in main window, then my lostfocus event on imageviewer doesn't work
+                var window = new Window();
+                await imageViewer.ShowDialog(window);
+            });
+
             var isRetweetThatQuotes = tweet.IsRetweet && tweet.RetweetedTweet.QuotedTweet != null;
             if (isRetweetThatQuotes || tweet.QuotedTweet != null)
             {
@@ -91,6 +97,23 @@ namespace CoreTiles.Tiles
                     {
                         DataContext = new TweetTileViewModel(isRetweetThatQuotes ? tweet.RetweetedTweet.QuotedTweet : tweet.QuotedTweet)
                     };
+            }
+            else
+            {
+                if (photos.Count() == 1 && !VideoButtonEnabled)
+                {
+                    var bytes = Helpers.HttpClient.GetByteArrayAsync(photos.Select(u => u.MediaURL).First()).Result;
+                    using var memoryStream = new MemoryStream(bytes);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    QuoteTweet = new Viewbox
+                    {
+                        Stretch = Avalonia.Media.Stretch.Uniform,
+                        Child = new Image
+                        {
+                            Source = new Bitmap(memoryStream)
+                        }
+                    };
+                }
             }
         }
 
