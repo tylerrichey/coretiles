@@ -25,17 +25,18 @@ namespace CoreTiles.Tiles
             => new TweetTile { DataContext = new TweetTileViewModel(t.CurrentTweet) });
 
         public override MenuItem MiniTile
-            => new MenuItem
+        {
+            get
             {
+                var baseMini = base.MiniTile;
+                baseMini.Foreground = Brush.Parse("#1da1f2");
                 //todo not sure about icons, seems like they don't work at the top level, need to test in green field
-                //Icon = new Bitmap(assets.Open(new Uri("avares://Tiles.Twitter/icon.ico"))),
-                [!MenuItem.HeaderProperty] = currentlyConnected.ToBinding(),
-                Foreground = Brush.Parse("#1da1f2")
-            };
+                //baseMini.Icon = new Bitmap(assets.Open(new Uri("avares://Tiles.Twitter/icon.ico")));
+                return baseMini;
+            }
+        }
 
         public ITweet CurrentTweet { get; }
-
-        private Subject<string> currentlyConnected = new Subject<string>();
 
         private static IAssetLoader assets => AvaloniaLocator.Current.GetService<IAssetLoader>();
 
@@ -73,9 +74,14 @@ namespace CoreTiles.Tiles
                     TileQueue.Enqueue(new Twitter(e.Tweet));
                 }
             };
-            stream.StreamStarted += (s, e) => MarkConnected();
+            stream.StreamStarted += (s, e) =>
+            {
+                Log("Stream started!");
+                MarkConnected();
+            };
             stream.StreamStopped += (s, e) =>
             {
+                Log("Stream stopped: " + string.Join(" - ", e.Exception.Message, e.DisconnectMessage));
                 MarkConnected(false);
                 Thread.Sleep(1000);
                 _ = stream.StartStreamMatchingAllConditionsAsync();
@@ -90,7 +96,7 @@ namespace CoreTiles.Tiles
             _ = stream.StartStreamMatchingAllConditionsAsync();
         }
 
-        private void MarkConnected(bool connected = true) => currentlyConnected.OnNext((connected ? "✔️" : "❌") + "Twitter");
+        private void MarkConnected(bool connected = true) => UpdateMiniTileText((connected ? "✔️" : "❌") + "Twitter");
 
         private async Task<bool> InitDebugEnvironment()
         {

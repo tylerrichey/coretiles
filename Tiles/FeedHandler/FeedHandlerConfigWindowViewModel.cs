@@ -19,8 +19,6 @@ namespace Tiles.FeedHandler
 
     public class FeedHandlerConfigWindowViewModel : ReactiveObject
     {
-        private const string configName = "FeedHandlerConfig";
-
         public ObservableCollection<FeedHandlerConfig> Feeds { get; set; } = new ObservableCollection<FeedHandlerConfig>();
 
         public ReactiveCommand<Unit, Unit> AddItem { get; }
@@ -35,20 +33,10 @@ namespace Tiles.FeedHandler
 
         public Subject<bool> CloseWindow { get; } = new Subject<bool>();
 
-        private string logString;
+        public FeedHandlerConfigWindowViewModel() { }
 
-        public FeedHandlerConfigWindowViewModel()
+        public FeedHandlerConfigWindowViewModel(LogViewer logViewer)
         {
-            
-        }
-
-        public FeedHandlerConfigWindowViewModel(List<string> logEntries)
-        {
-            var logs = new StringBuilder();
-            logEntries.Reverse();
-            logEntries.ForEach(l => logs.AppendLine(l));
-            logString = logs.ToString();
-
             AddItem = ReactiveCommand.Create(() => Feeds.Add(
                 new FeedHandlerConfig
                 {
@@ -58,34 +46,19 @@ namespace Tiles.FeedHandler
             DelItem = ReactiveCommand.Create<string>(url => Feeds.Remove(Feeds.First(f => f.Url == url)));
             SaveItems = ReactiveCommand.Create(async () =>
             {
-                await Helpers.SaveConfigFile(Feeds, configName);
+                await Helpers.SaveConfigFile<FeedHandler>(Feeds);
                 CloseWindow.OnNext(true);
             });
-            Cancel = ReactiveCommand.Create(() => CloseWindow.OnNext(true));
+            Cancel = ReactiveCommand.Create(() => CloseWindow.OnNext(false));
             ViewLogs = ReactiveCommand.Create(async () =>
             {
                 if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
-                    //todo perhaps abstract this to tiles.interface to add ez plugin logging???
                     var window = new Window
                     {
                         Height = 400,
-                        Width = 900,
-                        Content = new ScrollViewer
-                        {
-                            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top,
-                            Margin = Thickness.Parse("4"),
-                            Padding = Thickness.Parse("4"),
-                            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
-                            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-                            Content = new TextBlock
-                            {
-                                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
-                                Foreground = Brushes.White,
-                                FontSize = 14,
-                                Text = logString
-                            }
-                        }
+                        Width = 1200,
+                        Content = logViewer
                     };
                     await window.ShowDialog(desktop.MainWindow);
                 }
@@ -95,7 +68,7 @@ namespace Tiles.FeedHandler
             {
                 try
                 {
-                    var config = await Helpers.LoadConfigFile<List<FeedHandlerConfig>>(configName);
+                    var config = await Helpers.LoadConfigFile<FeedHandler, List<FeedHandlerConfig>>();
                     config.ForEach(c => Feeds.Add(c));
                 }
                 catch

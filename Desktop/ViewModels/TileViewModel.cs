@@ -2,6 +2,7 @@
 using Avalonia.Data;
 using Avalonia.Media;
 using Avalonia.Threading;
+using CoreTiles.Desktop.InternalServices;
 using CoreTiles.Tiles;
 using ReactiveUI;
 using System;
@@ -42,8 +43,6 @@ namespace CoreTiles.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref windowBackground, value);
         }
 
-        public string TimeDisplay => DateTime.Now.ToShortTimeString().Replace(" ", "");
-
         private int newItemCounter;
         public int NewItemCounter
         {
@@ -56,16 +55,6 @@ namespace CoreTiles.Desktop.ViewModels
         public TileViewModel(Services services)
         {
             _services = services;
-
-            //this feels wrong, but is effective
-            _ = Task.Run(async () =>
-            {
-                while (true)
-                {
-                    this.RaisePropertyChanged(nameof(TimeDisplay));
-                    await Task.Delay(TimeSpan.FromSeconds(1));
-                }
-            });
 
             Process.Execute()
                 .Subscribe();
@@ -80,10 +69,6 @@ namespace CoreTiles.Desktop.ViewModels
                 FontWeight = FontWeight.Bold,
                 Command = ReactiveCommand.Create(() => ScrollToHome.OnNext(true))
             });
-            MiniTiles.Add(new MenuItem
-            {
-                [!MenuItem.HeaderProperty] = new Binding("TimeDisplay")
-            });
 
             _services.Tiles
                 .ForEach(t => MiniTiles.Add(t.MiniTile));
@@ -93,6 +78,10 @@ namespace CoreTiles.Desktop.ViewModels
                 foreach (var tile in _services.Tiles)
                 {
                     await tile.Initialize();
+                    if (tile is SystemTile systemTile)
+                    {
+                        systemTile.SetServices(ref _services);
+                    }
                 }
             }).Execute().Subscribe();
         }

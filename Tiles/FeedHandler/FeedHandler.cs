@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tiles.FeedHandler
@@ -29,23 +30,19 @@ namespace Tiles.FeedHandler
             {
                 var window = new FeedHandlerConfigWindow
                 {
-                    DataContext = new FeedHandlerConfigWindowViewModel(logEntries)
+                    DataContext = new FeedHandlerConfigWindowViewModel(GetLogViewerControl())
                 };
                 if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
                     && await window.ShowDialog<bool>(desktop.MainWindow))
                 {
-                    logEntries.Add($"{DateTime.Now} - Restarting feed handlers...");
+                    Log($"Restarting feed handlers...");
                     InitializeFeedHandlers();
                 }
             })
         };
 
-        private Subject<string> menuTileString = new Subject<string>();
-        //todo make observable and/or more robust?
-        private List<string> logEntries = new List<string>();
-        private Task feedHandlerTask;
-
         public FeedItem CurrentItem { get; }
+
         public FeedHandler(FeedItem feedItem) => CurrentItem = feedItem;
         public FeedHandler() { }
 
@@ -54,7 +51,7 @@ namespace Tiles.FeedHandler
             FeedParser.SetHttpClient(Helpers.HttpClient);
 
 #if DEBUG
-            return Task.CompletedTask;
+            //return Task.CompletedTask;
 #endif
 
             InitializeFeedHandlers();
@@ -62,22 +59,29 @@ namespace Tiles.FeedHandler
             return Task.CompletedTask;
         }
 
+        private Subject<string> menuTileString = new Subject<string>();
+        private List<Task> feedHandlerTasks = new List<Task>();
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
         private void InitializeFeedHandlers()
         {
-            feedHandlerTask = Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
-                const string configName = "FeedHandlerConfig";
-                var config = await Helpers.LoadConfigFile<List<FeedHandlerConfig>>(configName);
+                var config = await Helpers.LoadConfigFile<FeedHandler, List<FeedHandlerConfig>>();
 
                 //todo enable on config save too
                 foreach (var f in config.Where(c => c.Enabled))
                 {
-                    //todo update status to menuitem
-                    _ = Task.Run(async () =>
+                    feedHandlerTasks.Add(Task.Run(async () =>
                     {
                         var lastSuccessfulCheck = DateTime.Now;
                         while (true)
                         {
+                            if (cancellationTokenSource.IsCancellationRequested)
+                            {
+                                Log($"Cancelling thread...");
+                                return;
+                            }
                             try
                             {
                                 //todo make type a config option?
@@ -93,18 +97,18 @@ namespace Tiles.FeedHandler
                                     }
                                     lastSuccessfulCheck = items.Max(i => i.PublishDate);
                                 }
-                                logEntries.Add($"{DateTime.Now} - Successful check for {f.Url} - Items retrieved: {feed.Count()} - Items displayed: {items.Count}");
+                                Log($"Successful check for {f.Url} - Items retrieved: {feed.Count()} - Items displayed: {items.Count}");
                                 menuTileString.OnNext("✔️Feeds!");
                             }
                             catch (Exception e)
                             {
-                                logEntries.Add($"{DateTime.Now} - Exception for {f.Url} - {e.Message}");
+                                Log($"Exception for {f.Url} - {e.Message}");
                                 menuTileString.OnNext("❌Feeds!");
                             }
 
                             await Task.Delay(TimeSpan.FromMinutes(f.CheckEveryMinutes));
                         }
-                    });
+                    }, cancellationTokenSource.Token));
                 }
             });
         }

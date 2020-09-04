@@ -13,28 +13,29 @@ namespace CoreTiles.Tiles
         public static string GetConfigDirectory()
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CoreTiles");
 
-        public static async Task SaveConfigFile<T>(T config, string name)
+        private static string TileTypeToConfigFileName(this Type t)
+            => Path.Combine(GetConfigDirectory(), t.Name + "Config.json");
+
+        public static async Task SaveConfigFile<T>(object config) where T : Tile
         {
             try
             {
-                var fileName = Path.Combine(GetConfigDirectory(), name + ".json");
                 var data = JsonConvert.SerializeObject(config);
                 Directory.CreateDirectory(GetConfigDirectory());
-                using var streamwriter = new StreamWriter(fileName);
+                using var streamwriter = new StreamWriter(typeof(T).GetType().TileTypeToConfigFileName());
                 await streamwriter.WriteAsync(data);
             }
             catch
             {
-
+                throw;
             }
         }
 
-        public static async Task<T> LoadConfigFile<T>(string name)
+        public static async Task<T> LoadConfigFile<P, T>() where P : Tile
         {
             try
             {
-                var fileName = Path.Combine(GetConfigDirectory(), name + ".json");
-                using var streamReader = new StreamReader(fileName);
+                using var streamReader = new StreamReader(typeof(P).TileTypeToConfigFileName());
                 var data = await streamReader.ReadToEndAsync();
                 return JsonConvert.DeserializeObject<T>(data);
             }

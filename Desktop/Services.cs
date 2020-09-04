@@ -19,6 +19,7 @@ namespace CoreTiles.Desktop
         {
             try
             {
+                tilePluginsList.Add(typeof(SystemTile));
                 tilePluginsList.Add(typeof(Weather));
                 tilePluginsList.AddRange(GetTilePlugins().Distinct());
                 Tiles = tilePluginsList.Select(p => Activator.CreateInstance(p) as Tile)

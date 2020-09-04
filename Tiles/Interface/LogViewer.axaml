@@ -1,0 +1,21 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:dd="clr-namespace:CoreTiles.Tiles;assembly=Tiles.Interface"
+             Design.DataContext="{x:Static dd:DesignData.LogViewerViewModel}"
+             Design.Height="400" Design.Width="900"
+             x:Class="CoreTiles.Tiles.LogViewer">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled" 
+                VerticalScrollBarVisibility="Auto" 
+                VerticalAlignment="Top" 
+                Margin="4" 
+                Padding="4">
+    <TextBlock HorizontalAlignment="Left" 
+               Foreground="White" 
+               FontSize="14" 
+               FontFamily="Cascadia Code PL" 
+               TextWrapping="Wrap"
+               Text="{Binding LogData}" />
+  </ScrollViewer>
+</UserControl>

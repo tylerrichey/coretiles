@@ -1,4 +1,5 @@
-﻿using FeedParserCore;
+﻿using CoreTiles.Tiles;
+using FeedParserCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,12 +23,13 @@ namespace Tiles.FeedHandler
         {
             get
             {
-                var vm = new FeedHandlerConfigWindowViewModel(new List<string>
+                var logv = new LogViewerViewModel(new List<(DateTime, string)>
                 {
-                    "Hello this is log",
-                    "hi this is another log",
-                    "bye this is log no more"
+                    (DateTime.Now, "Hello this is log"),
+                    (DateTime.Now, "hi this is another log"),
+                    (DateTime.Now, "bye this is log no more")
                 });
+                var vm = new FeedHandlerConfigWindowViewModel(new LogViewer { DataContext = logv });
                 vm.Feeds = new ObservableCollection<FeedHandlerConfig>
                 {
                     new FeedHandlerConfig { Url = "https://www.reddit.com/r/LiverpoolFC/new/.rss", CheckEveryMinutes = 5, Enabled = true, Regex = ".*" },

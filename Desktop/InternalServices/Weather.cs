@@ -84,10 +84,12 @@ namespace CoreTiles.Desktop.InternalServices
                         {
                             _infoLine += "🌙";
                         }
+                        Log("Latest update: {0}", _infoLine);
                         infoLine.OnNext(_infoLine);
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        Log("Exception! {0}", e.Message);
                         var last = await infoLine.LastOrDefaultAsync();
                         infoLine.OnNext("❌" + last);
                     }
