@@ -20,8 +20,8 @@ namespace CoreTiles.Desktop.ViewModels
     //todo something with randomizing the color pallete
     public class TileViewModel : ViewModelBase
     {
-        public ObservableCollection<Tile> Items { get; } = new ObservableCollection<Tile>();
-        public ObservableCollection<Tile> ItemsBuffer { get; } = new ObservableCollection<Tile>();
+        public ObservableCollection<TileData> Items { get; } = new ObservableCollection<TileData>();
+        public ObservableCollection<TileData> ItemsBuffer { get; } = new ObservableCollection<TileData>();
         public ObservableCollection<MenuItem> MiniTiles { get; internal set; } = new ObservableCollection<MenuItem>();
         public Subject<bool> ScrollToHome { get; } = new Subject<bool>();
 
@@ -83,6 +83,7 @@ namespace CoreTiles.Desktop.ViewModels
                         systemTile.SetServices(ref _services);
                     }
                 }
+                _services.TilesInitialized.OnNext(true);
             }).Execute().Subscribe();
         }
 
@@ -110,7 +111,7 @@ namespace CoreTiles.Desktop.ViewModels
 
                 foreach (var p in _services.Tiles)
                 {
-                    if (p.TileQueue.TryDequeue(out Tile tile))
+                    if (p.TileQueue.TryDequeue(out TileData tile))
                     {
                         if (BufferItems)
                         {
@@ -125,11 +126,11 @@ namespace CoreTiles.Desktop.ViewModels
                     }
                 }
 
-                await Task.Delay(10);
+                await Task.Delay(50);
             }
         });
 
-        private void InsertNewTile(Tile tile)
+        private void InsertNewTile(TileData tile)
         {
             if (Items.Count == itemsToCache)
             {

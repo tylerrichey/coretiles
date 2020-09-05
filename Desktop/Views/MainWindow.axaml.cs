@@ -1,8 +1,11 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Diagnostics;
 using Avalonia.Native;
+using System.Reactive.Linq;
+using CoreTiles.Desktop.ViewModels;
 
 namespace CoreTiles.Desktop.Views
 {
@@ -19,6 +22,10 @@ namespace CoreTiles.Desktop.Views
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+
+            _ = this.GetObservable(Window.DataContextProperty)
+                .OfType<MainWindowViewModel>()
+                .Subscribe(vm => vm.TileDataTemplate.Subscribe(this.DataTemplates.Add));
         }
     }
 }

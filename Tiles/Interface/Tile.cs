@@ -15,8 +15,7 @@ namespace CoreTiles.Tiles
 {
     public abstract class Tile : ITile
     {
-        //todo consider passing a different object than Tile??
-        public ConcurrentQueue<Tile> TileQueue { get; set; } = new ConcurrentQueue<Tile>();
+        public ConcurrentQueue<TileData> TileQueue { get; } = new ConcurrentQueue<TileData>();
 
         private LimitedList<(DateTime, string)> logItems = new LimitedList<(DateTime, string)>(50);
         protected void Log(string message, params string[] args) => logItems.TryAdd((DateTime.Now, string.Format(message, args)));
@@ -51,6 +50,13 @@ namespace CoreTiles.Tiles
                 }
             })
         };
+
+        protected void PushTileData(object data) => TileQueue.Enqueue(new TileData { Data = data });
+    }
+
+    public struct TileData
+    {
+        public object Data { get; internal set; }
     }
 
     public interface ITile

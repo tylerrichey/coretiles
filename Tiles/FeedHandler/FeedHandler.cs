@@ -19,8 +19,8 @@ namespace Tiles.FeedHandler
 {
     public class FeedHandler : Tile
     {
-        public override IDataTemplate DataTemplate { get; set; } = new FuncDataTemplate<FeedHandler>((f, s) =>
-            new FeedHandlerTile { DataContext = new FeedHandlerViewModel(f.CurrentItem) });
+        public override IDataTemplate DataTemplate { get; set; } = new FuncDataTemplate<FeedItem>((f, s) =>
+            new FeedHandlerTile { DataContext = new FeedHandlerViewModel(f) });
 
         public override MenuItem MiniTile => new MenuItem
         {
@@ -35,16 +35,11 @@ namespace Tiles.FeedHandler
                 if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
                     && await window.ShowDialog<bool>(desktop.MainWindow))
                 {
-                    Log($"Restarting feed handlers...");
+                    Log("Restarting feed handlers...");
                     InitializeFeedHandlers();
                 }
             })
         };
-
-        public FeedItem CurrentItem { get; }
-
-        public FeedHandler(FeedItem feedItem) => CurrentItem = feedItem;
-        public FeedHandler() { }
 
         public override Task Initialize()
         {
@@ -92,7 +87,8 @@ namespace Tiles.FeedHandler
                                 {
                                     foreach (var i in items)
                                     {
-                                        TileQueue.Enqueue(new FeedHandler(i));
+                                        //TileQueue.Enqueue(new FeedHandler(i));
+                                        PushTileData(i);
                                     }
                                     lastSuccessfulCheck = items.Max(i => i.PublishDate);
                                 }

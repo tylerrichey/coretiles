@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace CoreTiles.Desktop
     {
         private List<Type> tilePluginsList = new List<Type>();
         public List<Tile> Tiles { get; }
+        public Subject<bool> TilesInitialized { get; } = new Subject<bool>();
 
         public Services()
         {
