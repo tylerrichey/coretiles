@@ -22,7 +22,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    arguments: '--configuration $(buildConfiguration)'
+    arguments: '-c $(buildConfiguration)'
   displayName: 'dotnet build $(buildConfiguration)'
 
 - script: dotnet test --logger trx --collect "Code coverage"
@@ -35,12 +35,35 @@ steps:
   inputs:
     command: publish
     publishWebProjects: False
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    arguments: '-c $(BuildConfiguration) -o $(Build.ArtifactStagingDirectory)\win'
+    zipAfterPublish: true
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: publish
+    publishWebProjects: False
+    arguments: '-c $(BuildConfiguration) -r linux-x64 -o $(Build.ArtifactStagingDirectory)\linux'
     zipAfterPublish: True
 
-# this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.
+- task: DotNetCoreCLI@2
+  inputs:
+    command: publish
+    publishWebProjects: False
+    arguments: '-c $(BuildConfiguration) -r osx-x64 -o $(Build.ArtifactStagingDirectory)\osx'
+    zipAfterPublish: True
+
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-    artifactName: 'CoreTiles'
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)\win' 
+    artifactName: 'coretiles-win'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)\linux' 
+    artifactName: 'coretiles-linux'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)\osx' 
+    artifactName: 'coretiles-osx'
 
