@@ -51,7 +51,7 @@ namespace Tiles.FeedHandler
             FeedParser.SetHttpClient(Helpers.HttpClient);
 
 #if DEBUG
-            //return Task.CompletedTask;
+            return Task.CompletedTask;
 #endif
 
             InitializeFeedHandlers();
@@ -69,7 +69,6 @@ namespace Tiles.FeedHandler
             {
                 var config = await Helpers.LoadConfigFile<FeedHandler, List<FeedHandlerConfig>>();
 
-                //todo enable on config save too
                 foreach (var f in config.Where(c => c.Enabled))
                 {
                     feedHandlerTasks.Add(Task.Run(async () =>
@@ -79,7 +78,7 @@ namespace Tiles.FeedHandler
                         {
                             if (cancellationTokenSource.IsCancellationRequested)
                             {
-                                Log($"Cancelling thread...");
+                                Log("Cancelling thread...");
                                 return;
                             }
                             try
@@ -97,7 +96,7 @@ namespace Tiles.FeedHandler
                                     }
                                     lastSuccessfulCheck = items.Max(i => i.PublishDate);
                                 }
-                                Log($"Successful check for {f.Url} - Items retrieved: {feed.Count()} - Items displayed: {items.Count}");
+                                Log($"Successful for {f.Url} - Retrieved: {feed.Count()} - Displayed: {items.Count}");
                                 menuTileString.OnNext("✔️Feeds!");
                             }
                             catch (Exception e)

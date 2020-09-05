@@ -16,6 +16,9 @@ using Avalonia.Platform;
 using Avalonia.Media;
 using System.Reactive.Subjects;
 using Avalonia.Media.Imaging;
+using Tweetinvi.Parameters;
+using Tiles.Twitter;
+using Avalonia.Controls.ApplicationLifetimes;
 
 namespace CoreTiles.Tiles
 {
@@ -32,6 +35,22 @@ namespace CoreTiles.Tiles
                 baseMini.Foreground = Brush.Parse("#1da1f2");
                 //todo not sure about icons, seems like they don't work at the top level, need to test in green field
                 //baseMini.Icon = new Bitmap(assets.Open(new Uri("avares://Tiles.Twitter/icon.ico")));
+                baseMini.Command = ReactiveCommand.Create(async () =>
+                {
+                    var window = new TwitterConfigWindow
+                    {
+                        DataContext = new TwitterConfigViewModel(twitterConfig, GetLogViewerControl())
+                    };
+                    if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                    {
+                        await window.ShowDialog(desktop.MainWindow);
+                        if (!isConnected)
+                        {
+                            await LoadConfig();
+                            await InitTweetinvi();
+                        }
+                    }
+                });
                 return baseMini;
             }
         }
@@ -39,6 +58,8 @@ namespace CoreTiles.Tiles
         public ITweet CurrentTweet { get; }
 
         private static IAssetLoader assets => AvaloniaLocator.Current.GetService<IAssetLoader>();
+        private TwitterConfig twitterConfig;
+        private bool isConnected;
 
         public Twitter() { }
         public Twitter(ITweet tweet) => CurrentTweet = tweet;
@@ -46,9 +67,23 @@ namespace CoreTiles.Tiles
         public override async Task Initialize()
         {
             MarkConnected(false);
+            await LoadConfig();
+            
             if (!await InitDebugEnvironment())
             {
                 await InitTweetinvi();
+            }
+        }
+
+        private async Task LoadConfig()
+        {
+            try
+            {
+                twitterConfig = await Helpers.LoadConfigFile<Twitter, TwitterConfig>();
+            }
+            catch
+            {
+                twitterConfig = new TwitterConfig();
             }
         }
 
@@ -60,7 +95,7 @@ namespace CoreTiles.Tiles
             {
                 throw new ApplicationException("Missing Twitter creds!");
             }
-            Auth.SetUserCredentials(twitterCreds[0], twitterCreds[1], twitterCreds[2], twitterCreds[3]);
+            Auth.SetUserCredentials(twitterCreds[0], twitterCreds[1], twitterConfig.UserAccessToken, twitterConfig.UserAccessSecret);
             RateLimit.RateLimitTrackerMode = RateLimitTrackerMode.TrackAndAwait;
 
             var stream = Tweetinvi.Stream.CreateFilteredStream();
@@ -96,12 +131,69 @@ namespace CoreTiles.Tiles
             _ = stream.StartStreamMatchingAllConditionsAsync();
         }
 
-        private void MarkConnected(bool connected = true) => UpdateMiniTileText((connected ? "✔️" : "❌") + "Twitter");
+        private async Task InitHomelineTweets()
+        {
+            //// Create a new set of credentials for the application.
+            //var appCredentials = new TwitterCredentials("CONSUMER_KEY", "CONSUMER_SECRET");
+
+            //// Init the authentication process and store the related `AuthenticationContext`.
+            //var authenticationContext = AuthFlow.InitAuthentication(appCredentials);
+
+            //// Go to the URL so that Twitter authenticates the user and gives him a PIN code.
+            //Process.Start(authenticationContext.AuthorizationURL);
+
+            //// Ask the user to enter the pin code given by Twitter
+            //var pinCode = Console.ReadLine();
+
+            //// With this pin code it is now possible to get the credentials back from Twitter
+            //var userCredentials = AuthFlow.CreateCredentialsFromVerifierCode(pinCode, authenticationContext);
+
+            //// Use the user credentials in your application
+            //Auth.SetCredentials(userCredentials);
+
+            RateLimit.RateLimitTrackerMode = RateLimitTrackerMode.TrackAndAwait;
+            var currentTimeline = await User.GetAuthenticatedUser().GetHomeTimelineAsync(20);
+            long lastTweetProcessedId = 0;
+            foreach (var t in currentTimeline.OrderBy(c => c.CreatedAt))
+            {
+                TileQueue.Enqueue(new Twitter(t));
+                lastTweetProcessedId = t.Id;
+            }
+
+            _ = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(1));
+
+                    var timelineParams = new HomeTimelineParameters
+                    {
+                        SinceId = lastTweetProcessedId,
+                        MaximumNumberOfTweetsToRetrieve = 100
+                    };
+                    var tweets = await User.GetAuthenticatedUser().GetHomeTimelineAsync(timelineParams);
+                    foreach (var t in tweets)
+                    {
+                        TileQueue.Enqueue(new Twitter(t));
+                        lastTweetProcessedId = t.Id;
+                    }
+                }
+            });
+        }
+
+        private void MarkConnected(bool connected = true)
+        {
+            UpdateMiniTileText((connected ? "✔️" : "❌") + "Twitter");
+            if (!connected)
+            {
+                isConnected = false;
+            }
+        }
 
         private async Task<bool> InitDebugEnvironment()
         {
 #if DEBUG
-            return true;
+            //return true;
 
             const string dataFile = "sample.json";
             using var streamReader = new StreamReader(dataFile);

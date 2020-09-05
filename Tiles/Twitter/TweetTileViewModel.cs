@@ -14,6 +14,7 @@ using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using Tweetinvi.Models;
+using NeoSmart.Unicode;
 
 namespace CoreTiles.Tiles
 {
@@ -44,7 +45,9 @@ namespace CoreTiles.Tiles
             TweetUrl = tweet.Urls.Count == 0 ? tweet.Url : tweet.Urls[0].URL;
             StatsUrl = tweet.Url;
             Name = (tweet.CreatedBy.Verified ? "✔️" : "") + tweet.CreatedBy.Name;
-            TweetText = WebUtility.HtmlDecode(tweet.IsRetweet ? "RT @" + tweet.RetweetedTweet.CreatedBy.ScreenName + ": " + tweet.RetweetedTweet.FullText : tweet.FullText);
+            TweetText = FilterTweetText(
+                WebUtility.HtmlDecode(
+                    tweet.IsRetweet ? "RT @" + tweet.RetweetedTweet.CreatedBy.ScreenName + ": " + tweet.RetweetedTweet.FullText : tweet.FullText));
             TweetTime = "⏰" + tweet.CreatedAt.ToShortTimeString().Replace(" ", "");
             var stats = tweet.RetweetCount + tweet.ReplyCount.GetValueOrDefault() + tweet.QuoteCount.GetValueOrDefault();
             StatsCount = stats > 0 ? "🔁" + stats : string.Empty;
@@ -100,7 +103,7 @@ namespace CoreTiles.Tiles
             }
             else
             {
-                if (photos.Count() == 1 && !VideoButtonEnabled)
+                if (photos.Count() == 1)
                 {
                     var bytes = Helpers.HttpClient.GetByteArrayAsync(photos.Select(u => u.MediaURL).First()).Result;
                     using var memoryStream = new MemoryStream(bytes);
@@ -122,6 +125,28 @@ namespace CoreTiles.Tiles
             FileName = url,
             UseShellExecute = true
         });
+
+        //todo these characters are used a bunch from EU twitter accounts, but if the character
+        //     does not exist in the font you're using, it breaks stuff when you come across one
+        //     emoji stop printing in color, formatting is off, probably a windows bug
+        private Range badRange = new Range(new Codepoint("U+1D400"), new Codepoint("U+1D7FF"));
+        private string FilterTweetText(string input)
+        {
+            var filteredString = string.Empty;
+            foreach (var c in input.Codepoints())
+            {
+                if (c.IsIn(badRange))
+                {
+                    var newCodepoint = new Codepoint(c.Value - 120211);
+                    filteredString += newCodepoint.AsString();
+                }
+                else
+                {
+                    filteredString += c.AsString();
+                }
+            }
+            return filteredString;
+        }
 
         //private static IEnumerable<Match> GetMatches(List<string> regexs, string input)
         //{

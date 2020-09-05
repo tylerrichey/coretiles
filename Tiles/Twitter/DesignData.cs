@@ -42,5 +42,21 @@ You can watch the game 𝗟𝗜𝗩𝗘 on 𝗟𝗙𝗖𝗧𝗩 and 𝗟𝗙𝗖
                 return new TweetTileViewModel(Tweet.GenerateTweetFromDTO(tweetDTO));
             }
         }
+
+        public static TwitterConfigViewModel TwitterConfigViewModel { get; } =
+            new TwitterConfigViewModel(new TwitterConfig
+            {
+                UserAccessSecret = "Secret",
+                UserAccessToken = "Token"
+            }, new LogViewer
+            {
+                DataContext = new LogViewerViewModel(
+                    new List<(DateTime, string)>
+                    {
+                        (DateTime.Now, "Hello this is log"),
+                        (DateTime.Now, "hi this is another log"),
+                        (DateTime.Now, "bye this is log no more")
+                    })
+            });
     }
 }

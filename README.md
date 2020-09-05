@@ -1,3 +1,3 @@
 # Core Tiles
 
-[![Screenshot](screenshot.png)]
+![Screenshot](screenshot.png)

@@ -10,7 +10,7 @@ namespace CoreTiles.Tiles
     {
         public static HttpClient HttpClient = new HttpClient();
 
-        public static string GetConfigDirectory()
+        private static string GetConfigDirectory()
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CoreTiles");
 
         private static string TileTypeToConfigFileName(this Type t)
@@ -22,7 +22,7 @@ namespace CoreTiles.Tiles
             {
                 var data = JsonConvert.SerializeObject(config);
                 Directory.CreateDirectory(GetConfigDirectory());
-                using var streamwriter = new StreamWriter(typeof(T).GetType().TileTypeToConfigFileName());
+                using var streamwriter = new StreamWriter(typeof(T).TileTypeToConfigFileName());
                 await streamwriter.WriteAsync(data);
             }
             catch

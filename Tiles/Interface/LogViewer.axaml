@@ -11,11 +11,21 @@
                 VerticalAlignment="Top" 
                 Margin="4" 
                 Padding="4">
-    <TextBlock HorizontalAlignment="Left" 
-               Foreground="White" 
-               FontSize="14" 
-               FontFamily="Cascadia Code PL" 
-               TextWrapping="Wrap"
-               Text="{Binding LogData}" />
+    <StackPanel Orientation="Vertical">
+      <TextBlock HorizontalAlignment="Center"
+               Foreground="White"
+               FontSize="18"
+               FontFamily="Liberation Sans"
+               FontWeight="Bold"
+               Text="Log Viewer" />
+      <Separator Background="White" BorderThickness="1" Padding="4" Margin="4" />
+      <TextBlock HorizontalAlignment="Left"
+              Foreground="White"
+              FontSize="14"
+              FontFamily="Liberation Sans"
+              TextWrapping="Wrap"
+              Margin="4"
+              Text="{Binding LogData}" />
+    </StackPanel>
   </ScrollViewer>
 </UserControl>

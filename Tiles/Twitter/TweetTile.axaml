@@ -3,21 +3,23 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:dd="clr-namespace:CoreTiles.Tiles;assembly=Tiles.Twitter"
-             Design.DataContext="{x:Static dd:DesignData.TweetTileViewModelFile}"
+             Design.DataContext="{x:Static dd:DesignData.TweetTileViewModel}"
              Design.Width="500"
              Design.Height="350"
              x:Class="CoreTiles.Tiles.TweetTile">
   <UserControl.Styles>
     <Style Selector="TextBlock">
-      <Setter Property="FontSize" Value="14" />
-      <Setter Property="FontFamily" Value="Cascadia Code PL" />
+      <Setter Property="FontSize" Value="15" />
+      <Setter Property="FontFamily" Value="Liberation Sans" />
+      <Setter Property="FontWeight" Value="Medium" />
       <Setter Property="Margin" Value="4" />
       <Setter Property="TextWrapping" Value="WrapWithOverflow" />
       <Setter Property="ClipToBounds" Value="True" />
     </Style>
     <Style Selector="Button">
-      <Setter Property="FontSize" Value="14" />
-      <Setter Property="FontFamily" Value="Cascadia Code PL" />
+      <Setter Property="FontSize" Value="15" />
+      <Setter Property="FontFamily" Value="Liberation Sans" />
+      <Setter Property="FontWeight" Value="Medium" />
       <Setter Property="Margin" Value="4" />
       <Setter Property="ClipToBounds" Value="True" />
       <Setter Property="Cursor" Value="Hand" />
@@ -26,9 +28,9 @@
   <Border Background="#495057" Padding="4" Margin="4" CornerRadius="3" BorderThickness="2" BorderBrush="#1da1f2">
     <StackPanel ClipToBounds="True">
       <WrapPanel Name="NamePanel" Orientation="Horizontal" Cursor="Hand">
-        <TextBlock Foreground="OrangeRed" Text="{Binding ScreenName}" />
-        <TextBlock Text="{Binding Name}" />
-        <TextBlock Text="{Binding TweetTime}" />
+        <TextBlock Foreground="OrangeRed" Text="{Binding ScreenName}" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding TweetTime}" VerticalAlignment="Center" />
       </WrapPanel>
       <WrapPanel Name="TweetPanel" Orientation="Horizontal" Cursor="Hand">
         <TextBlock Text="{Binding TweetText}" />

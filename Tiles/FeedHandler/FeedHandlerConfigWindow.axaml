@@ -12,18 +12,18 @@
     <Style Selector="TextBlock">
       <Setter Property="Padding" Value="4" />
       <Setter Property="FontSize" Value="14" />
-      <Setter Property="FontFamily" Value="Cascadia Code PL" />
+      <Setter Property="FontFamily" Value="Liberation Sans" />
     </Style>
     <Style Selector="TextBox">
       <Setter Property="Padding" Value="3" />
       <Setter Property="FontSize" Value="14" />
-      <Setter Property="FontFamily" Value="Cascadia Code PL" />
+      <Setter Property="FontFamily" Value="Liberation Sans" />
     </Style>
     <Style Selector="Button">
       <Setter Property="Padding" Value="5" />
       <Setter Property="Margin" Value="4" />
       <Setter Property="FontSize" Value="14" />
-      <Setter Property="FontFamily" Value="Cascadia Code PL" />
+      <Setter Property="FontFamily" Value="Liberation Sans" />
     </Style>
   </Window.Styles>
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">

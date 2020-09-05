@@ -30,7 +30,7 @@ namespace CoreTiles.Tiles
 
         public abstract Task Initialize();
         public abstract IDataTemplate DataTemplate { get; set; }
-        //todo find an easy way for plugins to bind to header and get rest for free?
+        
         private Subject<string> headerSubject = new Subject<string>();
         protected void UpdateMiniTileText(string text) => headerSubject.OnNext(text);
         public virtual MenuItem MiniTile => new MenuItem
