@@ -46,7 +46,6 @@ namespace CoreTiles.Tiles
                         await window.ShowDialog(desktop.MainWindow);
                         if (!isConnected)
                         {
-                            await LoadConfig();
                             await InitTweetinvi();
                         }
                     }
@@ -58,7 +57,7 @@ namespace CoreTiles.Tiles
         public ITweet CurrentTweet { get; }
 
         private static IAssetLoader assets => AvaloniaLocator.Current.GetService<IAssetLoader>();
-        private TwitterConfig twitterConfig;
+        private TwitterConfig twitterConfig = new TwitterConfig();
         private bool isConnected;
 
         public Twitter() { }
@@ -67,7 +66,6 @@ namespace CoreTiles.Tiles
         public override async Task Initialize()
         {
             MarkConnected(false);
-            await LoadConfig();
             
             if (!await InitDebugEnvironment())
             {
@@ -89,13 +87,13 @@ namespace CoreTiles.Tiles
 
         private async Task InitTweetinvi()
         {
-            //todo this obviously isn't a long term solution
-            var twitterCreds = Environment.GetEnvironmentVariable("TWITTERCREDS").Split(',');
-            if (twitterCreds.Length != 4)
+            await LoadConfig();
+            if (!twitterConfig.IsPopulated())
             {
-                throw new ApplicationException("Missing Twitter creds!");
+                Log("Twitter configuration missing!");
+                return;
             }
-            Auth.SetUserCredentials(twitterCreds[0], twitterCreds[1], twitterConfig.UserAccessToken, twitterConfig.UserAccessSecret);
+            Auth.SetUserCredentials(twitterConfig.ConsumerKey, twitterConfig.ConsumerSecret, twitterConfig.UserAccessToken, twitterConfig.UserAccessSecret);
             RateLimit.RateLimitTrackerMode = RateLimitTrackerMode.TrackAndAwait;
 
             var stream = Tweetinvi.Stream.CreateFilteredStream();
@@ -131,69 +129,16 @@ namespace CoreTiles.Tiles
             _ = stream.StartStreamMatchingAllConditionsAsync();
         }
 
-        private async Task InitHomelineTweets()
-        {
-            //// Create a new set of credentials for the application.
-            //var appCredentials = new TwitterCredentials("CONSUMER_KEY", "CONSUMER_SECRET");
-
-            //// Init the authentication process and store the related `AuthenticationContext`.
-            //var authenticationContext = AuthFlow.InitAuthentication(appCredentials);
-
-            //// Go to the URL so that Twitter authenticates the user and gives him a PIN code.
-            //Process.Start(authenticationContext.AuthorizationURL);
-
-            //// Ask the user to enter the pin code given by Twitter
-            //var pinCode = Console.ReadLine();
-
-            //// With this pin code it is now possible to get the credentials back from Twitter
-            //var userCredentials = AuthFlow.CreateCredentialsFromVerifierCode(pinCode, authenticationContext);
-
-            //// Use the user credentials in your application
-            //Auth.SetCredentials(userCredentials);
-
-            RateLimit.RateLimitTrackerMode = RateLimitTrackerMode.TrackAndAwait;
-            var currentTimeline = await User.GetAuthenticatedUser().GetHomeTimelineAsync(20);
-            long lastTweetProcessedId = 0;
-            foreach (var t in currentTimeline.OrderBy(c => c.CreatedAt))
-            {
-                TileQueue.Enqueue(new Twitter(t));
-                lastTweetProcessedId = t.Id;
-            }
-
-            _ = Task.Run(async () =>
-            {
-                while (true)
-                {
-                    await Task.Delay(TimeSpan.FromMinutes(1));
-
-                    var timelineParams = new HomeTimelineParameters
-                    {
-                        SinceId = lastTweetProcessedId,
-                        MaximumNumberOfTweetsToRetrieve = 100
-                    };
-                    var tweets = await User.GetAuthenticatedUser().GetHomeTimelineAsync(timelineParams);
-                    foreach (var t in tweets)
-                    {
-                        TileQueue.Enqueue(new Twitter(t));
-                        lastTweetProcessedId = t.Id;
-                    }
-                }
-            });
-        }
-
         private void MarkConnected(bool connected = true)
         {
             UpdateMiniTileText((connected ? "✔️" : "❌") + "Twitter");
-            if (!connected)
-            {
-                isConnected = false;
-            }
+            isConnected = connected;
         }
 
         private async Task<bool> InitDebugEnvironment()
         {
 #if DEBUG
-            //return true;
+            return true;
 
             const string dataFile = "sample.json";
             using var streamReader = new StreamReader(dataFile);
@@ -219,5 +164,57 @@ namespace CoreTiles.Tiles
 #endif
             return false;
         }
+
+
+        // streaming is better than this, but i'll leave it in case i find a way to embed the consumer key and secret safely
+        //private async Task InitHomelineTweets()
+        //{
+        //    //// Create a new set of credentials for the application.
+        //    //var appCredentials = new TwitterCredentials("CONSUMER_KEY", "CONSUMER_SECRET");
+
+        //    //// Init the authentication process and store the related `AuthenticationContext`.
+        //    //var authenticationContext = AuthFlow.InitAuthentication(appCredentials);
+
+        //    //// Go to the URL so that Twitter authenticates the user and gives him a PIN code.
+        //    //Process.Start(authenticationContext.AuthorizationURL);
+
+        //    //// Ask the user to enter the pin code given by Twitter
+        //    //var pinCode = Console.ReadLine();
+
+        //    //// With this pin code it is now possible to get the credentials back from Twitter
+        //    //var userCredentials = AuthFlow.CreateCredentialsFromVerifierCode(pinCode, authenticationContext);
+
+        //    //// Use the user credentials in your application
+        //    //Auth.SetCredentials(userCredentials);
+
+        //    RateLimit.RateLimitTrackerMode = RateLimitTrackerMode.TrackAndAwait;
+        //    var currentTimeline = await User.GetAuthenticatedUser().GetHomeTimelineAsync(20);
+        //    long lastTweetProcessedId = 0;
+        //    foreach (var t in currentTimeline.OrderBy(c => c.CreatedAt))
+        //    {
+        //        TileQueue.Enqueue(new Twitter(t));
+        //        lastTweetProcessedId = t.Id;
+        //    }
+
+        //    _ = Task.Run(async () =>
+        //    {
+        //        while (true)
+        //        {
+        //            await Task.Delay(TimeSpan.FromMinutes(1));
+
+        //            var timelineParams = new HomeTimelineParameters
+        //            {
+        //                SinceId = lastTweetProcessedId,
+        //                MaximumNumberOfTweetsToRetrieve = 100
+        //            };
+        //            var tweets = await User.GetAuthenticatedUser().GetHomeTimelineAsync(timelineParams);
+        //            foreach (var t in tweets)
+        //            {
+        //                TileQueue.Enqueue(new Twitter(t));
+        //                lastTweetProcessedId = t.Id;
+        //            }
+        //        }
+        //    });
+        //}
     }
 }

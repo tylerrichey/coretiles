@@ -47,7 +47,9 @@ You can watch the game 𝗟𝗜𝗩𝗘 on 𝗟𝗙𝗖𝗧𝗩 and 𝗟𝗙𝗖
             new TwitterConfigViewModel(new TwitterConfig
             {
                 UserAccessSecret = "Secret",
-                UserAccessToken = "Token"
+                UserAccessToken = "Token",
+                ConsumerKey = "Consumer Key",
+                ConsumerSecret = "Consumer Secret"
             }, new LogViewer
             {
                 DataContext = new LogViewerViewModel(

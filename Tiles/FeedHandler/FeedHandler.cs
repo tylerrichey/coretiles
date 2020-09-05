@@ -51,7 +51,7 @@ namespace Tiles.FeedHandler
             FeedParser.SetHttpClient(Helpers.HttpClient);
 
 #if DEBUG
-            return Task.CompletedTask;
+            //return Task.CompletedTask;
 #endif
 
             InitializeFeedHandlers();

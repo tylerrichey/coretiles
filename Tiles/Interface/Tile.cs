@@ -15,7 +15,7 @@ namespace CoreTiles.Tiles
 {
     public abstract class Tile : ITile
     {
-        public Guid Id = Guid.NewGuid();
+        //todo consider passing a different object than Tile??
         public ConcurrentQueue<Tile> TileQueue { get; set; } = new ConcurrentQueue<Tile>();
 
         private LimitedList<(DateTime, string)> logItems = new LimitedList<(DateTime, string)>(50);
