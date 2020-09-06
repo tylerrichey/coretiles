@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:dd="clr-namespace:CoreTiles.Tiles;assembly=Tiles.Twitter"
-             Design.DataContext="{x:Static dd:DesignData.TweetTileViewModel}"
+             Design.DataContext="{x:Static dd:DesignData.TweetTileViewModelFile}"
              Design.Width="500"
              Design.Height="350"
              x:Class="CoreTiles.Tiles.TweetTile">

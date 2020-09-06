@@ -152,16 +152,16 @@ namespace CoreTiles.Tiles
                 PushTileData(tweet);
             }
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            Task.Run(() =>
-            {
-                Thread.Sleep(5000);
-                foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(40)))
-                {
-                    MarkConnected();
-                    PushTileData(tweet);
-                    Thread.Sleep(1000);
-                }
-            });
+            //Task.Run(() =>
+            //{
+            //    Thread.Sleep(5000);
+            //    foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(40)))
+            //    {
+            //        MarkConnected();
+            //        PushTileData(tweet);
+            //        Thread.Sleep(1000);
+            //    }
+            //});
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
 #endif

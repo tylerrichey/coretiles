@@ -15,6 +15,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Tweetinvi.Models;
 using NeoSmart.Unicode;
+using System.Text.RegularExpressions;
+using Avalonia.Media;
 
 namespace CoreTiles.Tiles
 {
@@ -45,9 +47,9 @@ namespace CoreTiles.Tiles
             TweetUrl = tweet.Urls.Count == 0 ? tweet.Url : tweet.Urls[0].URL;
             StatsUrl = tweet.Url;
             Name = (tweet.CreatedBy.Verified ? "✔️" : "") + tweet.CreatedBy.Name;
-            TweetText = FilterTweetText(
+            TweetText =
                 WebUtility.HtmlDecode(
-                    tweet.IsRetweet ? "RT @" + tweet.RetweetedTweet.CreatedBy.ScreenName + ": " + tweet.RetweetedTweet.FullText : tweet.FullText));
+                    tweet.IsRetweet ? "RT @" + tweet.RetweetedTweet.CreatedBy.ScreenName + ": " + tweet.RetweetedTweet.FullText : tweet.FullText);
             TweetTime = "⏰" + tweet.CreatedAt.ToShortTimeString().Replace(" ", "");
             var stats = tweet.RetweetCount + tweet.ReplyCount.GetValueOrDefault() + tweet.QuoteCount.GetValueOrDefault();
             StatsCount = stats > 0 ? "🔁" + stats : string.Empty;
@@ -110,7 +112,7 @@ namespace CoreTiles.Tiles
                     memoryStream.Seek(0, SeekOrigin.Begin);
                     QuoteTweet = new Viewbox
                     {
-                        Stretch = Avalonia.Media.Stretch.Uniform,
+                        Stretch = Stretch.Uniform,
                         Child = new Image
                         {
                             Source = new Bitmap(memoryStream)
@@ -130,31 +132,31 @@ namespace CoreTiles.Tiles
         //     does not exist in the font you're using, it breaks stuff when you come across one
         //     emoji stop printing in color, formatting is off, probably a windows bug
         //     this is just a stop gap btw, and it works eh
-        private Range badRange = new Range(new Codepoint("U+1D400"), new Codepoint("U+1D7FF"));
-        private string FilterTweetText(string input)
-        {
-            var filteredString = string.Empty;
-            foreach (var c in input.Codepoints())
-            {
-                if (c.IsIn(badRange))
-                {
-                    try
-                    {
-                        var newCodepoint = new Codepoint(c.Value - 120211);
-                        filteredString += newCodepoint.AsString();
-                    }
-                    catch
-                    {
-                        //for now we just drop it
-                    }
-                }
-                else
-                {
-                    filteredString += c.AsString();
-                }
-            }
-            return filteredString;
-        }
+        //private Range badRange = new Range(new Codepoint("U+1D400"), new Codepoint("U+1D7FF"));
+        //private string FilterTweetText(string input)
+        //{
+        //    var filteredString = string.Empty;
+        //    foreach (var c in input.Codepoints())
+        //    {
+        //        if (c.IsIn(badRange))
+        //        {
+        //            try
+        //            {
+        //                var newCodepoint = new Codepoint(c.Value - 120211);
+        //                filteredString += newCodepoint.AsString();
+        //            }
+        //            catch
+        //            {
+        //                //for now we just drop it
+        //            }
+        //        }
+        //        else
+        //        {
+        //            filteredString += c.AsString();
+        //        }
+        //    }
+        //    return filteredString;
+        //}
 
         //private static IEnumerable<Match> GetMatches(List<string> regexs, string input)
         //{
@@ -173,33 +175,45 @@ namespace CoreTiles.Tiles
         //     nope, is not effective, has to be done in avalonia i think
         //     need to ask before, but maybe a combo of wrappanels and stackpanels could highlight and
         //     handle newline issue that comes with using a bunch of textblocks to get the formatting
-        //private static IEnumerable<TextBlock> TweetTextToBlocks(string tweet)
+        //private static List<TextBlock> TweetTextToBlocks(string tweet)
         //{
-        //    var highlight = new List<string>
+        //    try
         //    {
-        //        @"#\w*",
-        //        @"\@\w*",
-        //        //@"htt(p://|ps://)\w*\.\w*(/\w*| )"
-        //    };
-        //    var matches = GetMatches(highlight, tweet)
-        //        .ToList()
-        //        .OrderBy(m => m.Index);
-
-        //    var newTweet = string.Copy(tweet);
-        //    foreach (var m in matches)
-        //    {
-        //        var replacement = tweet[m.Index] switch
+        //        var blocks = new List<TextBlock>();
+        //        var highlight = new List<string>
         //        {
-        //            '#' => "👉🏻",
-        //            '@' => "✨",
-        //            //'h' => "🔗h",
-        //            _ => ""
+        //            @"#\w*",
+        //            @"\@\w*",
+        //            @"htt(p://|ps://)\w*\.\w*(/\w*| )"
         //        };
-        //        newTweet = newTweet.Remove(m.Index, 1);
-        //        newTweet = newTweet.Insert(m.Index, replacement);
-        //    }
+        //        var matches = GetMatches(highlight, tweet)
+        //            .ToList()
+        //            .OrderBy(m => m.Index);
+        //        if (!matches.Any())
+        //        {
+        //            blocks.Add(new TextBlock { Text = tweet });
+        //            return blocks;
+        //        }
 
-        //    yield return DefaultTextBlock(newTweet);
+        //        var lastIndex = 0;
+        //        foreach (var m in matches)
+        //        {
+        //            blocks.Add(new TextBlock { Text = tweet.Substring(lastIndex, m.Index - lastIndex - 1) });
+        //            blocks.Add(new TextBlock { Text = tweet.Substring(m.Index, m.Length), Foreground = Brushes.OrangeRed });
+        //            lastIndex = m.Index + m.Length;
+        //        }
+
+        //        var lastLength = tweet.Length - lastIndex - 1;
+        //        if (lastLength > 0)
+        //        {
+        //            blocks.Add(new TextBlock { Text = tweet.Substring(lastIndex, lastLength) });
+        //        }
+        //        return blocks;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw e;
+        //    }
         //}
     }
 }

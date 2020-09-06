@@ -46,7 +46,14 @@ namespace Tiles.FeedHandler
             FeedParser.SetHttpClient(Helpers.HttpClient);
 
 #if DEBUG
-            //return Task.CompletedTask;
+            PushTileData(new FeedItem
+            {
+                Title = "Title",
+                Link = "https://www.google.com",
+                Content = "Content",
+                PublishDate = DateTime.Now
+            });
+            return Task.CompletedTask;
 #endif
 
             InitializeFeedHandlers();

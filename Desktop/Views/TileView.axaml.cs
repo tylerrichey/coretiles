@@ -21,6 +21,7 @@ namespace CoreTiles.Desktop.Views
                 .OfType<TileViewModel>()
                 .Subscribe(vm =>
                 {
+                    this.DataTemplates.AddRange(vm.TileDataTemplate);
                     vm.TileDataTemplate.CollectionChanged += (s, e) =>
                     {
                         foreach (var item in e.NewItems)

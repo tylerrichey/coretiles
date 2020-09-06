@@ -19,7 +19,6 @@ using System.Threading.Tasks;
 
 namespace CoreTiles.Desktop.ViewModels
 {
-    //todo something with randomizing the color pallete
     public class TileViewModel : ViewModelBase
     {
         public ObservableCollection<TileData> Items { get; } = new ObservableCollection<TileData>();
@@ -60,11 +59,6 @@ namespace CoreTiles.Desktop.ViewModels
         {
             _services = services;
 
-            //Process.Execute()
-            //    .Subscribe();
-            ////todo some kind of app wide error handling, this does nothing
-            //Process.ThrownExceptions.Subscribe(e => throw e);
-
             MiniTiles.Add(new MenuItem
             {
                 [!MenuItem.HeaderProperty] = new Binding("NewItemCounter"),
@@ -87,6 +81,7 @@ namespace CoreTiles.Desktop.ViewModels
                         try
                         {
                             TileDataTemplate.Add(tile.DataTemplate);
+                            logger.Verbose("Loaded {tileName} tile data template.", tile.GetType().Name);
                         }
                         catch (NotImplementedException)
                         {
