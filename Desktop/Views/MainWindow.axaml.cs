@@ -22,10 +22,6 @@ namespace CoreTiles.Desktop.Views
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-
-            _ = this.GetObservable(Window.DataContextProperty)
-                .OfType<MainWindowViewModel>()
-                .Subscribe(vm => vm.TileDataTemplate.Subscribe(this.DataTemplates.Add));
         }
     }
 }

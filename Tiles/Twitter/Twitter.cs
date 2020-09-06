@@ -135,6 +135,7 @@ namespace CoreTiles.Tiles
             isConnected = connected;
         }
 
+        //todo clean this up
         private async Task<bool> InitDebugEnvironment()
         {
 #if DEBUG
@@ -148,7 +149,6 @@ namespace CoreTiles.Tiles
             var tweetDTOs = json.ConvertJsonTo<ITweetDTO[]>();
             foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(10)))
             {
-                //TileQueue.Enqueue(new Twitter(tweet));
                 PushTileData(tweet);
             }
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -165,7 +165,9 @@ namespace CoreTiles.Tiles
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
 #endif
+#pragma warning disable CS0162 // Unreachable code detected
             return false;
+#pragma warning restore CS0162 // Unreachable code detected
         }
 
 

@@ -1,24 +1,45 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-//using Avalonia.Logging.Serilog;
 using Avalonia.ReactiveUI;
+using CoreTiles.Tiles;
+using Serilog;
 
 namespace CoreTiles.Desktop
 {
     internal static class Program
     {
-        // Initialization code. Don't use any Avalonia, third-party APIs or any
-        // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-        // yet and stuff might break.
-        public static void Main(string[] args) => BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+        public static void Main(string[] args)
+        {
+            try
+            {
+                var logDirectory = Path.Combine(Helpers.GetConfigDirectory(), "Logs");
+                Directory.CreateDirectory(logDirectory);
+                var fileName = Path.Combine(logDirectory, $"CoreTiles-{DateTime.Now:yyyyMMdd_hhmmss}.log");
+                Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Verbose()
+                    .Enrich.FromLogContext()
+                    .WriteTo.File(fileName,
+                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{SourceContext}] [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+                    .CreateLogger();
 
-        // Avalonia configuration, don't remove; also used by visual designer.
+                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            }
+            catch (Exception e)
+            {
+                Log.Fatal(e, "Main loop exception");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
+        }
+
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .LogToDebug()
+                //.LogToDebug(Avalonia.Logging.LogEventLevel.Verbose)
                 .UseReactiveUI();
     }
 }

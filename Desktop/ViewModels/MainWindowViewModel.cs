@@ -11,30 +11,7 @@ namespace CoreTiles.Desktop.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public MainWindowViewModel(Services services)
-        {
-            Tiles = new TileViewModel(services);
-
-            services.TilesInitialized.Subscribe(_ =>
-            {
-                ReactiveCommand.Create(() =>
-                {
-                    foreach (var tile in services.Tiles)
-                    {
-                        try
-                        {
-                            TileDataTemplate.OnNext(tile.DataTemplate);
-                        }
-                        catch (NotImplementedException)
-                        {
-                            //do nothing
-                        }
-                    }
-                }).Execute().Subscribe();
-            });
-        }
-
-        public Subject<IDataTemplate> TileDataTemplate { get; } = new Subject<IDataTemplate>();
+        public MainWindowViewModel(Services services) => Tiles = new TileViewModel(services);
 
         public TileViewModel Tiles { get; }
     }

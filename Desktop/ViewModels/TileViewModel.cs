@@ -1,10 +1,12 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Media;
 using Avalonia.Threading;
 using CoreTiles.Desktop.InternalServices;
 using CoreTiles.Tiles;
 using ReactiveUI;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,13 +23,15 @@ namespace CoreTiles.Desktop.ViewModels
     public class TileViewModel : ViewModelBase
     {
         public ObservableCollection<TileData> Items { get; } = new ObservableCollection<TileData>();
-        public ObservableCollection<TileData> ItemsBuffer { get; } = new ObservableCollection<TileData>();
+        public List<TileData> ItemsBuffer { get; } = new List<TileData>();
         public ObservableCollection<MenuItem> MiniTiles { get; internal set; } = new ObservableCollection<MenuItem>();
         public Subject<bool> ScrollToHome { get; } = new Subject<bool>();
+        public ObservableCollection<IDataTemplate> TileDataTemplate { get; } = new ObservableCollection<IDataTemplate>();
 
         //todo make global config item and/or implement lazy loading?
         private const int itemsToCache = 50;
         private Services _services;
+        private ILogger logger = Log.ForContext<TileViewModel>();
 
         private double itemWidth = 300;
         public double ItemWidth
@@ -56,10 +60,10 @@ namespace CoreTiles.Desktop.ViewModels
         {
             _services = services;
 
-            Process.Execute()
-                .Subscribe();
-            //todo some kind of app wide error handling, this does nothing
-            Process.ThrownExceptions.Subscribe(e => throw e);
+            //Process.Execute()
+            //    .Subscribe();
+            ////todo some kind of app wide error handling, this does nothing
+            //Process.ThrownExceptions.Subscribe(e => throw e);
 
             MiniTiles.Add(new MenuItem
             {
@@ -73,18 +77,72 @@ namespace CoreTiles.Desktop.ViewModels
             _services.Tiles
                 .ForEach(t => MiniTiles.Add(t.MiniTile));
 
-            ReactiveCommand.Create(async () =>
+            _ = Task.Run(async () =>
             {
-                foreach (var tile in _services.Tiles)
+                try
                 {
-                    await tile.Initialize();
-                    if (tile is SystemTile systemTile)
+                    foreach (var tile in _services.Tiles)
                     {
-                        systemTile.SetServices(ref _services);
+                        await tile.Initialize();
+                        try
+                        {
+                            TileDataTemplate.Add(tile.DataTemplate);
+                        }
+                        catch (NotImplementedException)
+                        {
+                            logger.Information("Tile {tileName} has no data template.", tile.GetType().Name);
+                        }
+                        if (tile is SystemTile systemTile)
+                        {
+                            systemTile.SetServices(ref _services);
+                        }
                     }
                 }
-                _services.TilesInitialized.OnNext(true);
-            }).Execute().Subscribe();
+                catch (Exception e)
+                {
+                    logger.Fatal(e, "Exception initializing tiles!");
+                }
+            });
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    while (true)
+                    {
+                        if (!BufferItems && ItemsBuffer.Any())
+                        {
+                            ItemsBuffer.ToList()
+                                .ForEach(InsertNewTile);
+                            ItemsBuffer.Clear();
+                            NewItemCounter = 0;
+                        }
+
+                        foreach (var p in _services.Tiles)
+                        {
+                            if (p.TileQueue.TryDequeue(out TileData tile))
+                            {
+                                if (BufferItems)
+                                {
+                                    ItemsBuffer.Add(tile);
+                                    NewItemCounter++;
+                                }
+                                else
+                                {
+                                    InsertNewTile(tile);
+                                    NewItemCounter = windowFocused ? 0 : NewItemCounter + 1;
+                                }
+                            }
+                        }
+
+                        await Task.Delay(50);
+                    }
+                }
+                catch (Exception e)
+                {
+                    logger.Fatal(e, "Exception processing new tiles!");
+                }
+            });
         }
 
         public int Columns = 3;
@@ -96,39 +154,6 @@ namespace CoreTiles.Desktop.ViewModels
             windowFocused = isFocused;
             NewItemCounter = windowFocused && ItemsBuffer.Count == 0 ? 0 : NewItemCounter;
         }
-
-        public ReactiveCommand<Unit, Task> Process => ReactiveCommand.Create(async () =>
-        {
-            while (true)
-            {
-                if (!BufferItems && ItemsBuffer.Any())
-                {
-                    ItemsBuffer.ToList()
-                        .ForEach(InsertNewTile);
-                    ItemsBuffer.Clear();
-                    NewItemCounter = 0;
-                }
-
-                foreach (var p in _services.Tiles)
-                {
-                    if (p.TileQueue.TryDequeue(out TileData tile))
-                    {
-                        if (BufferItems)
-                        {
-                            ItemsBuffer.Add(tile);
-                            NewItemCounter++;
-                        }
-                        else
-                        {
-                            InsertNewTile(tile);
-                            NewItemCounter = windowFocused ? 0 : NewItemCounter + 1;
-                        }
-                    }
-                }
-
-                await Task.Delay(50);
-            }
-        });
 
         private void InsertNewTile(TileData tile)
         {

@@ -129,6 +129,7 @@ namespace CoreTiles.Tiles
         //todo these characters are used a bunch from EU twitter accounts, but if the character
         //     does not exist in the font you're using, it breaks stuff when you come across one
         //     emoji stop printing in color, formatting is off, probably a windows bug
+        //     this is just a stop gap btw, and it works eh
         private Range badRange = new Range(new Codepoint("U+1D400"), new Codepoint("U+1D7FF"));
         private string FilterTweetText(string input)
         {
@@ -137,8 +138,15 @@ namespace CoreTiles.Tiles
             {
                 if (c.IsIn(badRange))
                 {
-                    var newCodepoint = new Codepoint(c.Value - 120211);
-                    filteredString += newCodepoint.AsString();
+                    try
+                    {
+                        var newCodepoint = new Codepoint(c.Value - 120211);
+                        filteredString += newCodepoint.AsString();
+                    }
+                    catch
+                    {
+                        //for now we just drop it
+                    }
                 }
                 else
                 {

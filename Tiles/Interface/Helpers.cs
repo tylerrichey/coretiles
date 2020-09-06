@@ -10,7 +10,7 @@ namespace CoreTiles.Tiles
     {
         public static HttpClient HttpClient = new HttpClient();
 
-        private static string GetConfigDirectory()
+        public static string GetConfigDirectory()
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CoreTiles");
 
         private static string TileTypeToConfigFileName(this Type t)

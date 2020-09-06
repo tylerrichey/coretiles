@@ -5,19 +5,13 @@ using System.Linq;
 using System;
 using CoreTiles.Desktop.ViewModels;
 using System.Reactive.Linq;
-using System.Threading;
-using Avalonia.Collections;
-using System.Collections.Generic;
-using System.Data;
-using ReactiveUI;
-using System.Reactive;
+using Avalonia.Controls.Templates;
 
 namespace CoreTiles.Desktop.Views
 {
     public class TileView : UserControl
     {
         private ScrollViewer scrollViewer => this.FindControl<ScrollViewer>("ScrollViewer");
-        private List<IDisposable> disposables = new List<IDisposable>();
 
         public TileView()
         {
@@ -27,6 +21,15 @@ namespace CoreTiles.Desktop.Views
                 .OfType<TileViewModel>()
                 .Subscribe(vm =>
                 {
+                    vm.TileDataTemplate.CollectionChanged += (s, e) =>
+                    {
+                        foreach (var item in e.NewItems)
+                        {
+                            var tile = item as IDataTemplate;
+                            this.DataTemplates.Add(tile);
+                        }
+                    };
+
                     this.AttachedToLogicalTree += (_, e) =>
                     {
                         switch (e.Root)
@@ -35,8 +38,8 @@ namespace CoreTiles.Desktop.Views
                                 var clientSizeObv = mainWindow.GetObservable(Window.ClientSizeProperty)
                                     .Subscribe(size =>
                                     {
-                                        var noWiderThan = 500;
-                                        var padding = 8;
+                                        const int noWiderThan = 500;
+                                        const int padding = 8;
                                         foreach (var i in Enumerable.Range(1, 10))
                                         {
                                             var target = size.Width / i;
@@ -48,10 +51,8 @@ namespace CoreTiles.Desktop.Views
                                             }
                                         }
                                     });
-                                disposables.Add(clientSizeObv);
                                 var focusObv = mainWindow.GetObservable(Window.IsFocusedProperty)
                                     .Subscribe(isFocused => vm.AnnounceWindowFocus(isFocused));
-                                disposables.Add(focusObv);
                                 var mouseObv = mainWindow.GetObservable(Window.IsPointerOverProperty)
                                     .Subscribe(isPointerOver => vm.AnnounceWindowFocus(isPointerOver));
                                 break;
@@ -60,15 +61,10 @@ namespace CoreTiles.Desktop.Views
 
                     var scrollObv = scrollViewer.GetObservable(ScrollViewer.VerticalScrollBarValueProperty)
                         .Subscribe(v => vm.BufferItems = v != 0);
-                    disposables.Add(scrollObv);
 
                     var scrollHomeObv = vm.ScrollToHome.Subscribe(_ => scrollViewer.ScrollToHome());
-                    disposables.Add(scrollHomeObv);
                 });
-            disposables.Add(dataObv);
         }
-
-        ~TileView() => disposables.ForEach(d => d?.Dispose());
 
         private void InitializeComponent()
         {

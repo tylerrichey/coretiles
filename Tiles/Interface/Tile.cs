@@ -18,7 +18,12 @@ namespace CoreTiles.Tiles
         public ConcurrentQueue<TileData> TileQueue { get; } = new ConcurrentQueue<TileData>();
 
         private LimitedList<(DateTime, string)> logItems = new LimitedList<(DateTime, string)>(50);
-        protected void Log(string message, params string[] args) => logItems.TryAdd((DateTime.Now, string.Format(message, args)));
+        protected void Log(string message, params string[] args)
+        {
+            Serilog.Log.ForContext(GetType()).Information(message, args);
+            logItems.TryAdd((DateTime.Now, string.Format(message, args)));
+        }
+
         public List<(DateTime, string)> GetLog() => logItems.ToList();
         public virtual LogViewer GetLogViewerControl() => new LogViewer
         {
