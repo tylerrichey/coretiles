@@ -36,6 +36,14 @@ namespace Tiles.FeedHandler
                     && await window.ShowDialog<bool>(desktop.MainWindow))
                 {
                     Log("Restarting feed handlers...");
+                    cancellationTokenSource.Cancel();
+                    while (tasks.Any(t => t.Status == TaskStatus.Running))
+                    {
+                        Log("Waiting for tasks to cancel...");
+                        await Task.Delay(500);
+                    }
+                    cancellationTokenSource = new CancellationTokenSource();
+                    tasks.Clear();
                     InitializeFeedHandlers();
                 }
             })
@@ -44,35 +52,28 @@ namespace Tiles.FeedHandler
         public override Task Initialize()
         {
             FeedParser.SetHttpClient(Helpers.HttpClient);
-
             InitializeFeedHandlers();
-
             return Task.CompletedTask;
         }
 
         private Subject<string> menuTileString = new Subject<string>();
-        private List<Task> feedHandlerTasks = new List<Task>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private List<Task> tasks = new List<Task>();
 
         private void InitializeFeedHandlers()
         {
 			menuTileString.OnNext("❌Feeds!");
-            _ = Task.Run(async () =>
+            tasks.Add(Task.Run(async () =>
             {
                 var config = await Helpers.LoadConfigFile<FeedHandler, List<FeedHandlerConfig>>();
 
                 foreach (var f in config.Where(c => c.Enabled))
                 {
-                    feedHandlerTasks.Add(Task.Run(async () =>
+                    tasks.Add(Task.Run(async () =>
                     {
                         var lastSuccessfulCheck = DateTime.Now;
                         while (true)
                         {
-                            if (cancellationTokenSource.IsCancellationRequested)
-                            {
-                                Log("Cancelling thread...");
-                                return;
-                            }
                             try
                             {
                                 //todo make type a config option?
@@ -84,7 +85,6 @@ namespace Tiles.FeedHandler
                                 {
                                     foreach (var i in items)
                                     {
-                                        //TileQueue.Enqueue(new FeedHandler(i));
                                         PushTileData(i);
                                     }
                                     lastSuccessfulCheck = items.Max(i => i.PublishDate);
@@ -98,23 +98,24 @@ namespace Tiles.FeedHandler
                                 menuTileString.OnNext("❌Feeds!");
                             }
 
-                            await Task.Delay(TimeSpan.FromMinutes(f.CheckEveryMinutes));
+                            await Task.Delay(TimeSpan.FromMinutes(f.CheckEveryMinutes), cancellationTokenSource.Token);
                         }
                     }, cancellationTokenSource.Token));
                 }
-            });
+            }));
         }
 
-        public override Task InitializeDebug()
-        {
-            PushTileData(new FeedItem
-            {
-                Title = "Title",
-                Link = "https://www.google.com",
-                Content = "Content",
-                PublishDate = DateTime.Now
-            });
-            return Task.CompletedTask;
-        }
+        public override Task InitializeDebug() => Initialize();
+        //public override Task InitializeDebug()
+        //{
+        //    PushTileData(new FeedItem
+        //    {
+        //        Title = "Title",
+        //        Link = "https://www.google.com",
+        //        Content = "Content",
+        //        PublishDate = DateTime.Now
+        //    });
+        //    return Task.CompletedTask;
+        //}
     }
 }

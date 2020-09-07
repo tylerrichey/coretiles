@@ -17,6 +17,7 @@ namespace Tiles.FeedHandler
 
         public FeedHandlerViewModel(FeedItem feedItem)
         {
+            //todo do something with content? it's often html...
             var content = feedItem.Content.Length > 400 ? feedItem.Content.Substring(0, 397) + "..." : feedItem.Content;
             Link = feedItem.Link;
             Title = feedItem.Title;
