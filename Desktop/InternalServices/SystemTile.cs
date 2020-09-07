@@ -50,5 +50,7 @@ namespace CoreTiles.Desktop.InternalServices
                 DataContext = new LogViewerViewModel(logs.ToString())
             };
         }
+
+        public override Task InitializeDebug() => Initialize();
     }
 }

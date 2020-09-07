@@ -16,6 +16,7 @@ namespace CoreTiles.Desktop
         private List<Type> tilePluginsList = new List<Type>();
         public List<Tile> Tiles { get; }
         public Subject<bool> TilesInitialized { get; } = new Subject<bool>();
+        public bool LoadMockData = Program.IsDevEnvironment;
 
         public Services()
         {

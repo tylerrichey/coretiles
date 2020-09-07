@@ -63,15 +63,7 @@ namespace CoreTiles.Tiles
         public Twitter() { }
         public Twitter(ITweet tweet) => CurrentTweet = tweet;
 
-        public override async Task Initialize()
-        {
-            MarkConnected(false);
-            
-            if (!await InitDebugEnvironment())
-            {
-                await InitTweetinvi();
-            }
-        }
+        public override async Task Initialize() => await InitTweetinvi();
 
         private async Task LoadConfig()
         {
@@ -87,6 +79,7 @@ namespace CoreTiles.Tiles
 
         private async Task InitTweetinvi()
         {
+            MarkConnected(false);
             await LoadConfig();
             if (!twitterConfig.IsPopulated())
             {
@@ -135,15 +128,10 @@ namespace CoreTiles.Tiles
             isConnected = connected;
         }
 
-        //todo clean this up
-        private async Task<bool> InitDebugEnvironment()
+        public override async Task InitializeDebug()
         {
-#if DEBUG
-            //return true;
-
-#pragma warning disable CS0162 // Unreachable code detected
+            MarkConnected(false);
             const string dataFile = "sample.json";
-#pragma warning restore CS0162 // Unreachable code detected
             using var streamReader = new StreamReader(dataFile);
             var json = await streamReader.ReadToEndAsync();
             var tweetDTOs = json.ConvertJsonTo<ITweetDTO[]>();
@@ -151,23 +139,17 @@ namespace CoreTiles.Tiles
             {
                 PushTileData(tweet);
             }
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            //Task.Run(() =>
-            //{
-            //    Thread.Sleep(5000);
-            //    foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(40)))
-            //    {
-            //        MarkConnected();
-            //        PushTileData(tweet);
-            //        Thread.Sleep(1000);
-            //    }
-            //});
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            return true;
-#endif
-#pragma warning disable CS0162 // Unreachable code detected
-            return false;
-#pragma warning restore CS0162 // Unreachable code detected
+
+            _ = Task.Run(() =>
+            {
+                Thread.Sleep(5000);
+                foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(40)))
+                {
+                    MarkConnected();
+                    PushTileData(tweet);
+                    Thread.Sleep(1000);
+                }
+            });
         }
 
 

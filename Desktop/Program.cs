@@ -10,8 +10,14 @@ namespace CoreTiles.Desktop
 {
     internal static class Program
     {
+        public static bool IsDevEnvironment = false;
+
         public static void Main(string[] args)
         {
+            if (args.Length == 1)
+            {
+                IsDevEnvironment = string.Equals(args[0].Trim(), "mock", StringComparison.OrdinalIgnoreCase);
+            }
             try
             {
                 var logDirectory = Path.Combine(Helpers.GetConfigDirectory(), "Logs");

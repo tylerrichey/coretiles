@@ -45,17 +45,6 @@ namespace Tiles.FeedHandler
         {
             FeedParser.SetHttpClient(Helpers.HttpClient);
 
-#if DEBUG
-            PushTileData(new FeedItem
-            {
-                Title = "Title",
-                Link = "https://www.google.com",
-                Content = "Content",
-                PublishDate = DateTime.Now
-            });
-            return Task.CompletedTask;
-#endif
-
             InitializeFeedHandlers();
 
             return Task.CompletedTask;
@@ -113,6 +102,18 @@ namespace Tiles.FeedHandler
                     }, cancellationTokenSource.Token));
                 }
             });
+        }
+
+        public override Task InitializeDebug()
+        {
+            PushTileData(new FeedItem
+            {
+                Title = "Title",
+                Link = "https://www.google.com",
+                Content = "Content",
+                PublishDate = DateTime.Now
+            });
+            return Task.CompletedTask;
         }
     }
 }

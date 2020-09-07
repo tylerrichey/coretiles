@@ -22,6 +22,7 @@ namespace CoreTiles.Desktop.InternalServices
 
         //todo config
         private const string weatherUrl = @"https://www.wunderground.com/weather/us/wa/seattle/KWASEATT2097";
+        private const string defaultMessage = "No Weather Data";
         private Subject<string> infoLine { get; } = new Subject<string>();
         public override MenuItem MiniTile => new MenuItem
         {
@@ -49,7 +50,7 @@ namespace CoreTiles.Desktop.InternalServices
 
         public override Task Initialize()
         {
-            infoLine.OnNext("No Weather Data");
+            infoLine.OnNext(defaultMessage);
             _ = Task.Run(async () =>
             {
                 while (true)
@@ -90,8 +91,7 @@ namespace CoreTiles.Desktop.InternalServices
                     catch (Exception e)
                     {
                         Log("Exception! {0}", e.Message);
-                        var last = await infoLine.LastOrDefaultAsync();
-                        infoLine.OnNext("❌" + last);
+                        infoLine.OnNext("❌" + defaultMessage);
                     }
                     finally
                     {
@@ -102,5 +102,7 @@ namespace CoreTiles.Desktop.InternalServices
 
             return Task.CompletedTask;
         }
+
+        public override Task InitializeDebug() => Initialize();
     }
 }

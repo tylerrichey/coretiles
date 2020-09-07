@@ -2,10 +2,7 @@
   "profiles": {
     "Desktop": {
       "commandName": "Project",
-      "environmentVariables": {
-        "TWITTERCREDS": "4k6fMhC0CmTQjfSuH8SdkddNx,8JNKoosTpI89oX5hrs34HAOwVleAOL93oHjnysZ1yAggvwFnNE,13845392-koaOa8FDkomszpQV8Us8bPoQoXpktLVy97FYeKqva,H8N3zsZDZ98aCduV8LcWRNtV48etmgpxErU9LvZN3H7Pm",
-        "TILEPATH": "C:\\Users\\Tyler\\source\\repos\\CoreTiles"
-      }
+      "commandLineArgs": "mock"
     }
   }
 }

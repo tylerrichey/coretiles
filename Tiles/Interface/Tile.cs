@@ -33,6 +33,7 @@ namespace CoreTiles.Tiles
         protected HttpClient httpClient => Helpers.HttpClient;
 
         public abstract Task Initialize();
+        public abstract Task InitializeDebug();
         public abstract IDataTemplate DataTemplate { get; set; }
         
         private Subject<string> headerSubject = new Subject<string>();
@@ -67,5 +68,7 @@ namespace CoreTiles.Tiles
     public interface ITile
     {
         Task Initialize();
+
+        Task InitializeDebug();
     }
 }

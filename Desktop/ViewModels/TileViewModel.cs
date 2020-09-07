@@ -77,7 +77,15 @@ namespace CoreTiles.Desktop.ViewModels
                 {
                     foreach (var tile in _services.Tiles)
                     {
-                        await tile.Initialize();
+                        if (_services.LoadMockData)
+                        {
+                            await tile.InitializeDebug();
+                        }
+                        else
+                        {
+                            await tile.Initialize();
+                        }
+                        
                         try
                         {
                             TileDataTemplate.Add(tile.DataTemplate);
@@ -87,6 +95,7 @@ namespace CoreTiles.Desktop.ViewModels
                         {
                             logger.Information("Tile {tileName} has no data template.", tile.GetType().Name);
                         }
+
                         if (tile is SystemTile systemTile)
                         {
                             systemTile.SetServices(ref _services);
