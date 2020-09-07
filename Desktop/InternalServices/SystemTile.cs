@@ -1,6 +1,11 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Templates;
+using CoreTiles.Desktop.ViewModels;
+using CoreTiles.Desktop.Views;
 using CoreTiles.Tiles;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +32,39 @@ namespace CoreTiles.Desktop.InternalServices
             return Task.CompletedTask;
         }
 
-        Services services;
+        public override MenuItem MiniTile
+        {
+            get
+            {
+                var baseMini = base.MiniTile;
+                baseMini.Command = ReactiveCommand.Create(async () =>
+                {
+                    var window = new SystemTileConfigWindow
+                    {
+                        Height = 400,
+                        Width = 1200,
+                        DataContext = new SystemTileViewModel(this.GetLogViewerControl())
+                    };
+                    if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                    {
+                        await window.ShowDialog(desktop.MainWindow);
+
+                        //todo probably refine and/or abstract this idea
+                        foreach (var tile in services.Tiles)
+                        {
+                            if (tile is Weather weather)
+                            {
+                                await weather.ReloadConfig();
+                                break;
+                            }
+                        }
+                    }
+                });
+                return baseMini;
+            }
+        }
+
+        private static Services services;
         internal void SetServices(ref Services servicesRef) => services = servicesRef;
 
         //todo improve log viewer control in general

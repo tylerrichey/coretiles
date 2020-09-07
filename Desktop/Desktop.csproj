@@ -29,4 +29,9 @@
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Views\SystemTileConfigWindow.axaml.cs">
+      <DependentUpon>SystemTileConfigWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

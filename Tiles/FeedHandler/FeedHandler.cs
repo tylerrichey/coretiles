@@ -56,6 +56,7 @@ namespace Tiles.FeedHandler
 
         private void InitializeFeedHandlers()
         {
+			menuTileString.OnNext("❌Feeds!");
             _ = Task.Run(async () =>
             {
                 var config = await Helpers.LoadConfigFile<FeedHandler, List<FeedHandlerConfig>>();

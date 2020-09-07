@@ -77,14 +77,16 @@ namespace CoreTiles.Desktop.ViewModels
                 {
                     foreach (var tile in _services.Tiles)
                     {
+                        var initTasks = new Collection<Task>();
                         if (_services.LoadMockData)
                         {
-                            await tile.InitializeDebug();
+                            initTasks.Add(tile.InitializeDebug());
                         }
                         else
                         {
-                            await tile.Initialize();
+                            initTasks.Add(tile.Initialize());
                         }
+                        await Task.WhenAll(initTasks);
                         
                         try
                         {
