@@ -1,5 +1,6 @@
 ﻿using CoreTiles.Desktop.InternalServices;
 using CoreTiles.Tiles;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -13,6 +14,7 @@ namespace CoreTiles.Desktop
 {
     public class Services
     {
+        private ILogger logger = Log.ForContext<Services>();
         private List<Type> tilePluginsList = new List<Type>();
         public List<Tile> Tiles { get; }
         public Subject<bool> TilesInitialized { get; } = new Subject<bool>();
@@ -28,13 +30,10 @@ namespace CoreTiles.Desktop
                 Tiles = tilePluginsList.Select(p => Activator.CreateInstance(p) as Tile)
                     .ToList();
             }
-            catch (AggregateException ae)
+            catch (Exception e)
             {
-                //todo log these
-                var excs = ae.Flatten().InnerExceptions;
-                throw new ApplicationException("Error initializing plugins", excs[0]);
+                logger.Fatal(e, "Error constructing tile objects!");
             }
-            
         }
 
         private List<Type> GetTilePlugins()
@@ -42,7 +41,7 @@ namespace CoreTiles.Desktop
             var match = typeof(Tile);
             var possiblePlugins = new List<Type>();
 
-            var tilePath = Environment.GetEnvironmentVariable("TILEPATH") ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var tilePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             foreach (var f in Directory.GetFiles(tilePath, "*.dll", SearchOption.AllDirectories)
                      .Where(d => Path.GetFileName(d).StartsWith("Tiles.", StringComparison.CurrentCulture)))
             {
@@ -51,10 +50,9 @@ namespace CoreTiles.Desktop
                     var assembly = Assembly.LoadFrom(f);
                     possiblePlugins.AddRange(assembly.GetTypes().Where(t => match.IsAssignableFrom(t) && !t.IsAbstract && t.IsClass));
                 }
-                catch
+                catch (Exception e)
                 {
-                    //log something?
-                    //log something!
+                    logger.Error(e, "Error loading external tile dll");
                 }
             }
 

@@ -86,8 +86,7 @@ namespace CoreTiles.Desktop.ViewModels
                         {
                             initTasks.Add(tile.Initialize());
                         }
-                        await Task.WhenAll(initTasks);
-                        
+
                         try
                         {
                             TileDataTemplate.Add(tile.DataTemplate);
@@ -102,7 +101,13 @@ namespace CoreTiles.Desktop.ViewModels
                         {
                             systemTile.SetServices(ref _services);
                         }
+
+                        await Task.WhenAll(initTasks);
                     }
+                }
+                catch (AggregateException ae)
+                {
+                    throw ae.Flatten().InnerException;
                 }
                 catch (Exception e)
                 {
