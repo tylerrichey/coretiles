@@ -38,7 +38,7 @@ You can watch the game 𝗟𝗜𝗩𝗘 on 𝗟𝗙𝗖𝗧𝗩 and 𝗟𝗙𝗖
                 //todo replace with file with single tweet
                 const string dataFile = @"C:\Users\Tyler\source\repos\CoreTiles\Tiles\Twitter\sample.json";
                 var json = File.ReadAllText(dataFile);
-                var tweetDTO = json.ConvertJsonTo<ITweetDTO[]>()[145];
+                var tweetDTO = json.ConvertJsonTo<ITweetDTO[]>()[180];
                 return new TweetTileViewModel(Tweet.GenerateTweetFromDTO(tweetDTO));
             }
         }

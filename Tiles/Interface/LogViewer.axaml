@@ -17,7 +17,7 @@
                FontSize="18"
                FontFamily="Liberation Sans"
                FontWeight="Bold"
-               Text="Log Viewer" />
+               Text="Tile Log Viewer" />
       <Separator Background="White" BorderThickness="1" Padding="4" Margin="4" />
       <TextBlock HorizontalAlignment="Left"
               Foreground="White"

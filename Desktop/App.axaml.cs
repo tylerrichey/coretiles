@@ -10,6 +10,8 @@ namespace CoreTiles.Desktop
 {
     public class App : Application
     {
+        private static Services services;
+
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -19,13 +21,17 @@ namespace CoreTiles.Desktop
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+                services = new Services();
                 desktop.MainWindow = new MainWindow
                 {
-                    DataContext = new MainWindowViewModel(new Services())
+                    DataContext = new MainWindowViewModel(services)
                 };
+                desktop.Exit += (s, e) => services.Tiles.ForEach(t => t.Dispose());
             }
 
             base.OnFrameworkInitializationCompleted();
         }
+
+        
     }
 }

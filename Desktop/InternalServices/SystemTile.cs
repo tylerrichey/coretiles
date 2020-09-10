@@ -41,7 +41,7 @@ namespace CoreTiles.Desktop.InternalServices
                 {
                     var window = new SystemTileConfigWindow
                     {
-                        Height = 400,
+                        Height = 500,
                         Width = 1200,
                         DataContext = new SystemTileViewModel(this.GetLogViewerControl())
                     };
@@ -84,10 +84,14 @@ namespace CoreTiles.Desktop.InternalServices
             }
             return new LogViewer
             {
+                Height = 400,
+                Width = 1100,
                 DataContext = new LogViewerViewModel(logs.ToString())
             };
         }
 
         public override Task InitializeDebug() => Initialize();
+
+        public override void Dispose() { }
     }
 }

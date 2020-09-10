@@ -32,17 +32,17 @@
         <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
         <TextBlock Text="{Binding TweetTime}" VerticalAlignment="Center" />
       </WrapPanel>
-      <WrapPanel Name="TweetPanel" Orientation="Horizontal" Cursor="Hand">
+      <WrapPanel Name="TweetPanel" Orientation="Horizontal" Cursor="Hand" IsVisible="{Binding ShowAll}">
         <TextBlock Text="{Binding TweetText}" />
       </WrapPanel>
-      <WrapPanel Name="StatsPanel" Orientation="Horizontal" Cursor="Hand">
+      <WrapPanel Name="StatsPanel" Orientation="Horizontal" Cursor="Hand" IsVisible="{Binding ShowAll}">
         <TextBlock Text="{Binding StatsCount}" VerticalAlignment="Center" />
         <TextBlock Text="{Binding FavoriteCount}" VerticalAlignment="Center" />
         <Button IsVisible="{Binding PhotoButtonEnabled}" IsEnabled="{Binding PhotoButtonEnabled}" Content="{Binding PhotoButtonLabel}" Command="{Binding PhotoCommand}" VerticalAlignment="Center" />
         <Button IsVisible="{Binding VideoButtonEnabled}" IsEnabled="{Binding VideoButtonEnabled}" Content="Video" Command="{Binding VideoCommand}" VerticalAlignment="Center" />
       </WrapPanel>
       <Border>
-        <ContentControl Content="{Binding QuoteTweet}" />
+        <ContentControl Content="{Binding EmbeddedControl}" />
       </Border>
     </StackPanel>
   </Border>

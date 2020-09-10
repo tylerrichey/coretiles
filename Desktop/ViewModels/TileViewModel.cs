@@ -28,7 +28,7 @@ namespace CoreTiles.Desktop.ViewModels
         public ObservableCollection<IDataTemplate> TileDataTemplate { get; } = new ObservableCollection<IDataTemplate>();
 
         //todo make global config item and/or implement lazy loading?
-        private const int itemsToCache = 50;
+        private const int itemsToCache = 75;
         private Services _services;
         private ILogger logger = Log.ForContext<TileViewModel>();
 

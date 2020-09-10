@@ -58,6 +58,8 @@ namespace CoreTiles.Tiles
         };
 
         protected void PushTileData(object data) => TileQueue.Enqueue(new TileData { Data = data });
+
+        public abstract void Dispose();
     }
 
     public struct TileData
@@ -65,7 +67,7 @@ namespace CoreTiles.Tiles
         public object Data { get; internal set; }
     }
 
-    public interface ITile
+    public interface ITile : IDisposable
     {
         Task Initialize();
 

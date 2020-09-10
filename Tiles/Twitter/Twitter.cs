@@ -56,7 +56,7 @@ namespace CoreTiles.Tiles
 
         public ITweet CurrentTweet { get; }
 
-        private static IAssetLoader assets => AvaloniaLocator.Current.GetService<IAssetLoader>();
+        //private static IAssetLoader assets => AvaloniaLocator.Current.GetService<IAssetLoader>();
         private TwitterConfig twitterConfig = new TwitterConfig();
         private bool isConnected;
 
@@ -77,6 +77,8 @@ namespace CoreTiles.Tiles
             }
         }
 
+        IFilteredStream stream;
+
         private async Task InitTweetinvi()
         {
             MarkConnected(false);
@@ -89,7 +91,7 @@ namespace CoreTiles.Tiles
             Auth.SetUserCredentials(twitterConfig.ConsumerKey, twitterConfig.ConsumerSecret, twitterConfig.UserAccessToken, twitterConfig.UserAccessSecret);
             RateLimit.RateLimitTrackerMode = RateLimitTrackerMode.TrackAndAwait;
 
-            var stream = Tweetinvi.Stream.CreateFilteredStream();
+            stream = Tweetinvi.Stream.CreateFilteredStream();
             var friends = await User.GetAuthenticatedUser().GetFriendIdsAsync();
             friends.ForEach(f => stream.AddFollow(f));
             stream.MatchOn = MatchOn.Follower;
@@ -112,7 +114,7 @@ namespace CoreTiles.Tiles
                 Thread.Sleep(1000);
                 _ = stream.StartStreamMatchingAllConditionsAsync();
             };
-
+            
             var currentTimeline = await User.GetAuthenticatedUser().GetHomeTimelineAsync(20);
             foreach (var t in currentTimeline.OrderBy(c => c.CreatedAt))
             {
@@ -120,6 +122,12 @@ namespace CoreTiles.Tiles
             }
 
             _ = stream.StartStreamMatchingAllConditionsAsync();
+        }
+
+        public override void Dispose()
+        {
+            //todo refactor
+            stream?.StopStream();
         }
 
         private void MarkConnected(bool connected = true)

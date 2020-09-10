@@ -36,7 +36,14 @@ namespace CoreTiles.Tiles
         public string ProfileUrl { get; set; }
         public string TweetUrl { get; set; }
         public string StatsUrl { get; set; }
-        public IControl QuoteTweet { get; }
+        public bool ShowAll { get; set; }
+
+        private IControl embeddedControl;
+        public IControl EmbeddedControl
+        {
+            get => embeddedControl;
+            set => this.RaiseAndSetIfChanged(ref embeddedControl, value);
+        }
 
         public TweetTileViewModel() { }
 
@@ -47,14 +54,25 @@ namespace CoreTiles.Tiles
             TweetUrl = tweet.Urls.Count == 0 ? tweet.Url : tweet.Urls[0].URL;
             StatsUrl = tweet.Url;
             Name = (tweet.CreatedBy.Verified ? "✔️" : "") + tweet.CreatedBy.Name;
-            TweetText =
-                WebUtility.HtmlDecode(
-                    tweet.IsRetweet ? "RT @" + tweet.RetweetedTweet.CreatedBy.ScreenName + ": " + tweet.RetweetedTweet.FullText : tweet.FullText);
+            if (tweet.IsRetweet && tweet.RetweetedTweet.QuotedTweet != null)
+            {
+                TweetText = "RT @" + tweet.RetweetedTweet.CreatedBy.ScreenName + ": " + tweet.RetweetedTweet.FullText;
+            }
+            else if (tweet.IsRetweet && tweet.RetweetedTweet.QuotedTweet == null)
+            {
+                TweetText = string.Empty;
+            }
+            else
+            {
+                TweetText = tweet.FullText;
+            }
+            TweetText = WebUtility.HtmlDecode(TweetText);
             TweetTime = "⏰" + tweet.CreatedAt.ToShortTimeString().Replace(" ", "");
             var stats = tweet.RetweetCount + tweet.ReplyCount.GetValueOrDefault() + tweet.QuoteCount.GetValueOrDefault();
-            StatsCount = stats > 0 ? "🔁" + stats : string.Empty;
-            FavoriteCount = tweet.FavoriteCount > 0 ? "❤️" + tweet.FavoriteCount : string.Empty;
-            
+            StatsCount = stats > 0 && !(tweet.IsRetweet && tweet.RetweetedTweet.QuotedTweet == null) ? "🔁" + stats : string.Empty;
+            FavoriteCount = tweet.FavoriteCount > 0 && !(tweet.IsRetweet && tweet.RetweetedTweet.QuotedTweet == null) ? "❤️" + tweet.FavoriteCount : string.Empty;
+            ShowAll = !(tweet.IsRetweet && tweet.RetweetedTweet.QuotedTweet == null);
+
             VideoButtonEnabled = tweet.Media.Any(v => v.MediaType == "video");
             if (VideoButtonEnabled)
             {
@@ -95,29 +113,49 @@ namespace CoreTiles.Tiles
             });
 
             var isRetweetThatQuotes = tweet.IsRetweet && tweet.RetweetedTweet.QuotedTweet != null;
-            if (isRetweetThatQuotes || tweet.QuotedTweet != null)
+            if (isRetweetThatQuotes || tweet.QuotedTweet != null || tweet.RetweetedTweet != null)
             {
-                QuoteTweet =
-                    new TweetTile
-                    {
-                        DataContext = new TweetTileViewModel(isRetweetThatQuotes ? tweet.RetweetedTweet.QuotedTweet : tweet.QuotedTweet)
-                    };
+                ITweet useTweet = null;
+                if (isRetweetThatQuotes)
+                {
+                    useTweet = tweet.RetweetedTweet.QuotedTweet;
+                }
+                else if (tweet.QuotedTweet != null)
+                {
+                    useTweet = tweet.QuotedTweet;
+                }
+                else if (tweet.RetweetedTweet != null)
+                {
+                    useTweet = tweet.RetweetedTweet;
+                }
+
+                if (useTweet != null)
+                {
+                    EmbeddedControl =
+                        new TweetTile
+                        {
+                            DataContext = new TweetTileViewModel(useTweet)
+                        };
+                }
             }
             else
             {
                 if (photos.Count() == 1)
                 {
-                    var bytes = Helpers.HttpClient.GetByteArrayAsync(photos.Select(u => u.MediaURL).First()).Result;
-                    using var memoryStream = new MemoryStream(bytes);
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    QuoteTweet = new Viewbox
+                    ReactiveCommand.Create(async () =>
                     {
-                        Stretch = Stretch.Uniform,
-                        Child = new Image
+                        var bytes = await Helpers.HttpClient.GetByteArrayAsync(photos.Select(u => u.MediaURL).First());
+                        using var memoryStream = new MemoryStream(bytes);
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        EmbeddedControl = new Viewbox
                         {
-                            Source = new Bitmap(memoryStream)
-                        }
-                    };
+                            Stretch = Stretch.Uniform,
+                            Child = new Image
+                            {
+                                Source = new Bitmap(memoryStream)
+                            }
+                        };
+                    }).Execute().Subscribe();
                 }
             }
         }

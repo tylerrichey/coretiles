@@ -128,14 +128,20 @@ namespace CoreTiles.Desktop.InternalServices
             {
                 _infoLine += "☀️";
             }
-            else
+            else if (DateTime.Now.Hour < 6 && DateTime.Now.Hour > 20)
             {
                 _infoLine += "🌙";
+            }
+            else
+            {
+                _infoLine += "⛅";
             }
             Log("Latest update: {0}", _infoLine);
             infoLine.OnNext(_infoLine);
         }
 
         public override Task InitializeDebug() => Initialize();
+
+        public override void Dispose() { }
     }
 }
