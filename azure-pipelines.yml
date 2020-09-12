@@ -13,12 +13,14 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  tagVersion: replace('$(Build.SourceBranch)', 'refs/tags/', '-')
+  winPath: '$(Build.ArtifactStagingDirectory)\coretiles-win'
+  linPath: '$(Build.ArtifactStagingDirectory)\coretiles-linux'
+  osxPath: '$(Build.ArtifactStagingDirectory)\coretiles-osx'
+  tagVersion: replace('$(Build.SourceBranch)', 'refs/tags/', '')
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
-    filenameVersion: '$(tagVersion)'
-  winPath: '$(Build.ArtifactStagingDirectory)\coretiles-win$(filenameVersion)'
-  linPath: '$(Build.ArtifactStagingDirectory)\coretiles-linux$(filenameVersion)'
-  osxPath: '$(Build.ArtifactStagingDirectory)\coretiles-osx$(filenameVersion)'
+    winPath: '$(Build.ArtifactStagingDirectory)\coretiles-win-$(tagVersion)'
+    linPath: '$(Build.ArtifactStagingDirectory)\coretiles-linux-$(tagVersion)'
+    osxPath: '$(Build.ArtifactStagingDirectory)\coretiles-osx-$(tagVersion)'
 
 steps:
 - task: DotNetCoreCLI@2
