@@ -13,6 +13,12 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  tagVersion: replace('$(Build.SourceBranch)', 'refs/tags/', '-')
+  ${{ if not(eq(variables['tagVersion'], '-')) }}
+    filenameVersion: '$(tagVersion)'
+  winPath: '$(Build.ArtifactStagingDirectory)\coretiles-win$(filenameVersion)'
+  linPath: '$(Build.ArtifactStagingDirectory)\coretiles-linux$(filenameVersion)'
+  osxPath: '$(Build.ArtifactStagingDirectory)\coretiles-osx$(filenameVersion)'
 
 steps:
 - task: DotNetCoreCLI@2
@@ -35,35 +41,46 @@ steps:
   inputs:
     command: publish
     publishWebProjects: False
-    arguments: '-p:PublishProfile=WinProfile -o $(Build.ArtifactStagingDirectory)\win'
+    arguments: '-p:PublishProfile=WinProfile -o $(winPath)'
     zipAfterPublish: true
 
 - task: DotNetCoreCLI@2
   inputs:
     command: publish
     publishWebProjects: False
-    arguments: '-p:PublishProfile=LinuxProfile -o $(Build.ArtifactStagingDirectory)\linux'
+    arguments: '-p:PublishProfile=LinuxProfile -o $(linPath)'
     zipAfterPublish: True
 
 - task: DotNetCoreCLI@2
   inputs:
     command: publish
     publishWebProjects: False
-    arguments: '-p:PublishProfile=OSXProfile -o $(Build.ArtifactStagingDirectory)\osx'
+    arguments: '-p:PublishProfile=OSXProfile -o $(osxPath)'
     zipAfterPublish: True
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)\win' 
+    pathtoPublish: '$(winPath)'
     artifactName: 'coretiles-win'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)\linux' 
+    pathtoPublish: '$(linPath)' 
     artifactName: 'coretiles-linux'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)\osx' 
+    pathtoPublish: '$(osxPath)'
     artifactName: 'coretiles-osx'
 
+- task: GithubRelease@0 
+  displayName: 'Create GitHub Release'
+  inputs:
+    gitHubConnection: tylerrichey
+    repositoryName: tylerrichey/coretiles
+    isDraft: true
+    assets: |
+      $(winPath)
+      $(linPath)
+      $(osxPath)
+  
