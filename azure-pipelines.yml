@@ -22,7 +22,7 @@ variables:
     winPath: '$(Build.ArtifactStagingDirectory)\coretiles-win'
     linPath: '$(Build.ArtifactStagingDirectory)\coretiles-linux'
     osxPath: '$(Build.ArtifactStagingDirectory)\coretiles-osx'
-  tagVersion: $[replace('$(Build.SourceBranch)', 'refs/tags/', '')]
+  tagVersion: $[replace(variables['Build.SourceBranch'], 'refs/tags/', '')]
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
     winPath: '$(Build.ArtifactStagingDirectory)\coretiles-win-$(tagVersion)'
     linPath: '$(Build.ArtifactStagingDirectory)\coretiles-linux-$(tagVersion)'
@@ -88,7 +88,7 @@ steps:
     repositoryName: tylerrichey/coretiles
     isDraft: true
     assets: |
-      $(winPath)
-      $(linPath)
-      $(osxPath)
+      $(winPath).zip
+      $(linPath).zip
+      $(osxPath).zip
   
