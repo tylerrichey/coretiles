@@ -92,4 +92,3 @@ steps:
     gitHubConnection: github.com_tylerrichey
     repositoryName: tylerrichey/coretiles
     isDraft: true
-    assets: '**/*.zip'
