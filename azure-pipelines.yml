@@ -14,7 +14,7 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   tagVersion: replace('$(Build.SourceBranch)', 'refs/tags/', '-')
-  ${{ if not(eq(variables['tagVersion'], '-')) }}
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/')) }}:
     filenameVersion: '$(tagVersion)'
   winPath: '$(Build.ArtifactStagingDirectory)\coretiles-win$(filenameVersion)'
   linPath: '$(Build.ArtifactStagingDirectory)\coretiles-linux$(filenameVersion)'
