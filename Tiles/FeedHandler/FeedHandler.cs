@@ -68,12 +68,12 @@ namespace Tiles.FeedHandler
             _ = Task.Run(() =>
             {
                 var config = Helpers.GetConfig<FeedHandler, List<FeedHandlerConfig>>();
-
+                var rando = new Random();
                 foreach (var f in config.Where(c => c.Enabled))
                 {
                     tasks.Add(Task.Run(async () =>
                     {
-                        var lastSuccessfulCheck = DateTime.Now;
+                        var lastSuccessfulCheck = DateTime.Now.AddMinutes(-1 * f.CheckEveryMinutes);
                         while (true)
                         {
                             try

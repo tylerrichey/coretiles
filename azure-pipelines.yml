@@ -66,10 +66,12 @@ steps:
     arguments: '-p:PublishProfile=OSXProfile -o $(osxPath)'
     zipAfterPublish: True
 
-- task: PublishBuildArtifacts@1
+- task: GithubRelease@0 
+  displayName: 'Create GitHub Release'
   inputs:
-    pathtoPublish: '$(winPath)'
-    artifactName: 'coretiles-win'
+    gitHubConnection: github.com_tylerrichey
+    repositoryName: tylerrichey/coretiles
+    isDraft: true
 
 - task: PublishBuildArtifacts@1
   inputs:
@@ -86,9 +88,3 @@ steps:
     pathtoPublish: '$(osxPath)'
     artifactName: 'coretiles-osx'
 
-- task: GithubRelease@0 
-  displayName: 'Create GitHub Release'
-  inputs:
-    gitHubConnection: github.com_tylerrichey
-    repositoryName: tylerrichey/coretiles
-    isDraft: true
