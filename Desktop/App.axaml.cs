@@ -26,7 +26,7 @@ namespace CoreTiles.Desktop
                 {
                     DataContext = new MainWindowViewModel(services)
                 };
-                desktop.Exit += (s, e) => services.Tiles.ForEach(t => t.Dispose());
+                //desktop.Exit += (s, e) => services.Tiles.ForEach(t => t.Dispose());
             }
 
             base.OnFrameworkInitializationCompleted();

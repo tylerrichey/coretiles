@@ -16,7 +16,7 @@ namespace CoreTiles.Desktop.InternalServices
 {
     public class SystemTile : Tile
     {
-        public override IDataTemplate DataTemplate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override IDataTemplate DataTemplate { get => throw new NotImplementedException(); }
 
         public override Task Initialize()
         {
@@ -31,6 +31,8 @@ namespace CoreTiles.Desktop.InternalServices
 
             return Task.CompletedTask;
         }
+
+        public override Type ConfigType => typeof(SystemTileConfig);
 
         public override MenuItem MiniTile
         {
@@ -78,7 +80,7 @@ namespace CoreTiles.Desktop.InternalServices
             }
             var logs = new StringBuilder();
             foreach (var s in logData.OrderByDescending(l => l.Item2)
-                .Select(l => string.Join(" - ", l.Item1, l.Item2, l.Item3)))
+                .Select(l => string.Join(" - ", l.Item2, l.Item1, l.Item3)))
             {
                 logs.AppendLine(s);
             }
@@ -91,7 +93,5 @@ namespace CoreTiles.Desktop.InternalServices
         }
 
         public override Task InitializeDebug() => Initialize();
-
-        public override void Dispose() { }
     }
 }

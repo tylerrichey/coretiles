@@ -87,8 +87,8 @@ namespace CoreTiles.Tiles
                 {
                     Process.Start(new ProcessStartInfo
                     {
-                        //todo make config value
-                        FileName = @"C:\Program Files\VideoLAN\VLC\vlc.exe",
+                        //FileName = @"C:\Program Files\VideoLAN\VLC\vlc.exe",
+                        FileName = Helpers.SystemConfig.VideoPlayerLocation,
                         Arguments = videoUrl,
                         UseShellExecute = true
                     });

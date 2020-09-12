@@ -27,7 +27,9 @@ namespace CoreTiles.Desktop
                     .MinimumLevel.Verbose()
                     .Enrich.FromLogContext()
                     .WriteTo.File(fileName,
-                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{SourceContext}] [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{SourceContext}] [{Level:u3}] {Message:lj}{NewLine}{Exception}",
+                        rollingInterval: RollingInterval.Day,
+                        retainedFileCountLimit: 7)
                     .CreateLogger();
 
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
@@ -45,7 +47,7 @@ namespace CoreTiles.Desktop
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                //.LogToDebug(Avalonia.Logging.LogEventLevel.Verbose)
+                .LogToDebug(Avalonia.Logging.LogEventLevel.Information)
                 .UseReactiveUI();
     }
 }

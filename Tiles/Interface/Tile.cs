@@ -34,7 +34,7 @@ namespace CoreTiles.Tiles
 
         public abstract Task Initialize();
         public abstract Task InitializeDebug();
-        public abstract IDataTemplate DataTemplate { get; set; }
+        public abstract IDataTemplate DataTemplate { get; }
         
         private Subject<string> headerSubject = new Subject<string>();
         protected void UpdateMiniTileText(string text) => headerSubject.OnNext(text);
@@ -59,7 +59,7 @@ namespace CoreTiles.Tiles
 
         protected void PushTileData(object data) => TileQueue.Enqueue(new TileData { Data = data });
 
-        public abstract void Dispose();
+        public abstract Type ConfigType { get; }
     }
 
     public struct TileData
@@ -67,7 +67,7 @@ namespace CoreTiles.Tiles
         public object Data { get; internal set; }
     }
 
-    public interface ITile : IDisposable
+    public interface ITile
     {
         Task Initialize();
 

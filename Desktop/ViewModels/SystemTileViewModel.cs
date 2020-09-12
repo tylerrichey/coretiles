@@ -4,6 +4,7 @@ using CoreTiles.Tiles;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Subjects;
 using System.Text;
@@ -24,17 +25,31 @@ namespace CoreTiles.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref weatherConfig, value);
         }
 
+        private SystemTileConfig systemTileConfig;
+        public SystemTileConfig SystemTileConfig
+        {
+            get => systemTileConfig;
+            set => this.RaiseAndSetIfChanged(ref systemTileConfig, value);
+        }
+
         public SystemTileViewModel(LogViewer logViewer)
         {
             LogViewer = logViewer;
 
             SaveItems = ReactiveCommand.Create(async () =>
             {
-                await Helpers.SaveConfigFile<Weather>(Weather);
+                var saves = new Collection<Task>
+                {
+                    Helpers.SaveConfigFile<Weather>(Weather),
+                    Helpers.SaveConfigFile<SystemTile>(SystemTileConfig)
+                };
+                await Task.WhenAll(saves);
+
                 CloseWindow.OnNext(true);
             });
 
-            ReactiveCommand.Create(async () => Weather = await Helpers.LoadConfigFile<Weather, WeatherConfig>()).Execute().Subscribe();
+            Weather = Helpers.GetConfig<Weather, WeatherConfig>();
+            SystemTileConfig = Helpers.GetConfig<SystemTile, SystemTileConfig>();
         }
     }
 }

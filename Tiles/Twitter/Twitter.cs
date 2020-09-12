@@ -24,7 +24,7 @@ namespace CoreTiles.Tiles
 {
     public class Twitter : Tile
     {
-        public override IDataTemplate DataTemplate { get; set; } = new FuncDataTemplate<ITweet>((t, s) 
+        public override IDataTemplate DataTemplate { get; } = new FuncDataTemplate<ITweet>((t, s) 
             => new TweetTile { DataContext = new TweetTileViewModel(t) }, true);
 
         public override MenuItem MiniTile
@@ -54,35 +54,20 @@ namespace CoreTiles.Tiles
             }
         }
 
-        public ITweet CurrentTweet { get; }
+        public override Type ConfigType => typeof(TwitterConfig);
 
         //private static IAssetLoader assets => AvaloniaLocator.Current.GetService<IAssetLoader>();
         private TwitterConfig twitterConfig = new TwitterConfig();
         private bool isConnected;
 
-        public Twitter() { }
-        public Twitter(ITweet tweet) => CurrentTweet = tweet;
-
         public override async Task Initialize() => await InitTweetinvi();
-
-        private async Task LoadConfig()
-        {
-            try
-            {
-                twitterConfig = await Helpers.LoadConfigFile<Twitter, TwitterConfig>();
-            }
-            catch
-            {
-                twitterConfig = new TwitterConfig();
-            }
-        }
 
         IFilteredStream stream;
 
         private async Task InitTweetinvi()
         {
             MarkConnected(false);
-            await LoadConfig();
+            twitterConfig = Helpers.GetConfig<Twitter, TwitterConfig>();
             if (!twitterConfig.IsPopulated())
             {
                 Log("Twitter configuration missing!");
@@ -122,12 +107,6 @@ namespace CoreTiles.Tiles
             }
 
             _ = stream.StartStreamMatchingAllConditionsAsync();
-        }
-
-        public override void Dispose()
-        {
-            //todo refactor
-            stream?.StopStream();
         }
 
         private void MarkConnected(bool connected = true)

@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        Height="800" Width="600"
+        Height="500" Width="1200"
         x:Class="CoreTiles.Desktop.Views.SystemTileConfigWindow"
         Title="SystemTileConfigWindow">
   <Window.Styles>
@@ -30,9 +30,13 @@
       </Button>
     </StackPanel>
     <StackPanel Orientation="Vertical" Margin="8">
-      <Grid ColumnDefinitions="30*,70*" RowDefinitions="Auto" Margin="6">
+      <Grid ColumnDefinitions="15*,75*" RowDefinitions="Auto, Auto, Auto" Margin="6">
         <TextBlock Grid.Column="0" Grid.Row="0" Text="Weather Underground Url:" VerticalAlignment="Center" />
         <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Weather.WeatherUndergroundUrl}" VerticalAlignment="Center"/>
+        <TextBlock Grid.Column="0" Grid.Row="1" Text="Video Player Location:" VerticalAlignment="Center" />
+        <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding SystemTileConfig.VideoPlayerLocation}" VerticalAlignment="Center"/>
+        <TextBlock Grid.Column="0" Grid.Row="2" Text="Items To Cache:" VerticalAlignment="Center" />
+        <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding SystemTileConfig.ItemsToCache}" VerticalAlignment="Center"/>
       </Grid>
       <ContentControl Content="{Binding LogViewer}" />
     </StackPanel>

@@ -19,7 +19,7 @@ namespace Tiles.FeedHandler
 {
     public class FeedHandler : Tile
     {
-        public override IDataTemplate DataTemplate { get; set; } = new FuncDataTemplate<FeedItem>((f, s) =>
+        public override IDataTemplate DataTemplate { get; } = new FuncDataTemplate<FeedItem>((f, s) =>
             new FeedHandlerTile { DataContext = new FeedHandlerViewModel(f) });
 
         public override MenuItem MiniTile => new MenuItem
@@ -49,6 +49,8 @@ namespace Tiles.FeedHandler
             })
         };
 
+        public override Type ConfigType => typeof(List<FeedHandlerConfig>);
+
         public override Task Initialize()
         {
             FeedParser.SetHttpClient(Helpers.HttpClient);
@@ -63,9 +65,9 @@ namespace Tiles.FeedHandler
         private void InitializeFeedHandlers()
         {
 			menuTileString.OnNext("❌Feeds!");
-            tasks.Add(Task.Run(async () =>
+            _ = Task.Run(() =>
             {
-                var config = await Helpers.LoadConfigFile<FeedHandler, List<FeedHandlerConfig>>();
+                var config = Helpers.GetConfig<FeedHandler, List<FeedHandlerConfig>>();
 
                 foreach (var f in config.Where(c => c.Enabled))
                 {
@@ -102,10 +104,8 @@ namespace Tiles.FeedHandler
                         }
                     }, cancellationTokenSource.Token));
                 }
-            }));
+            });
         }
-
-        public override void Dispose() => cancellationTokenSource.Cancel();
 
         //public override Task InitializeDebug() => Initialize();
         public override Task InitializeDebug()

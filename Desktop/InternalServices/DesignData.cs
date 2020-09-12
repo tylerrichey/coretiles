@@ -10,6 +10,12 @@ namespace CoreTiles.Desktop.InternalServices
 {
     public static class DesignData
     {
+        public static WeatherUpdate WeatherUpdate { get; } =
+            new WeatherUpdate
+            {
+                Update = "70°☀️"
+            };
+
         public static TileViewModel TileViewModel { get; } =
             new TileViewModel
             {

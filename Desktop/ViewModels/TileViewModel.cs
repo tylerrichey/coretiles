@@ -27,8 +27,8 @@ namespace CoreTiles.Desktop.ViewModels
         public Subject<bool> ScrollToHome { get; } = new Subject<bool>();
         public ObservableCollection<IDataTemplate> TileDataTemplate { get; } = new ObservableCollection<IDataTemplate>();
 
-        //todo make global config item and/or implement lazy loading?
-        private const int itemsToCache = 75;
+        private int itemsToCache => Helpers.SystemConfig.ItemsToCache;
+
         private Services _services;
         private ILogger logger = Log.ForContext<TileViewModel>();
 
@@ -75,9 +75,11 @@ namespace CoreTiles.Desktop.ViewModels
             {
                 try
                 {
+                    var initTasks = new Collection<Task>();
                     foreach (var tile in _services.Tiles)
                     {
-                        var initTasks = new Collection<Task>();
+                        await Helpers.LoadConfigFile(tile.GetType(), tile.ConfigType);
+
                         if (_services.LoadMockData)
                         {
                             initTasks.Add(tile.InitializeDebug());
@@ -101,9 +103,8 @@ namespace CoreTiles.Desktop.ViewModels
                         {
                             systemTile.SetServices(ref _services);
                         }
-
-                        await Task.WhenAll(initTasks);
                     }
+                    await Task.WhenAll(initTasks);
                 }
                 catch (AggregateException ae)
                 {
@@ -168,7 +169,7 @@ namespace CoreTiles.Desktop.ViewModels
 
         private void InsertNewTile(TileData tile)
         {
-            if (Items.Count == itemsToCache)
+            if (Items.Count == itemsToCache && itemsToCache > 0)
             {
                 Enumerable.Range(itemsToCache - 1 - Columns, Columns)
                     .Reverse()

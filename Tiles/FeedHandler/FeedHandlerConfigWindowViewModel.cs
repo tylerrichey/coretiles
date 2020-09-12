@@ -64,18 +64,15 @@ namespace Tiles.FeedHandler
                 }
             });
 
-            ReactiveCommand.Create(async () =>
+            var config = Helpers.GetConfig<FeedHandler, List<FeedHandlerConfig>>();
+            if (config.Count == 0)
             {
-                try
-                {
-                    var config = await Helpers.LoadConfigFile<FeedHandler, List<FeedHandlerConfig>>();
-                    config.ForEach(c => Feeds.Add(c));
-                }
-                catch
-                {
-                    AddItem.Execute().Subscribe();
-                }
-            }).Execute().Subscribe();
+                AddItem.Execute().Subscribe();
+            }
+            else
+            {
+                config.ForEach(c => Feeds.Add(c));
+            }
         }
     }
 }

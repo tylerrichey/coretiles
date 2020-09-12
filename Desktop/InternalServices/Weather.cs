@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Avalonia.Media;
+using CoreTiles.Desktop.Views;
 using CoreTiles.Tiles;
 using ReactiveUI;
 using System;
@@ -20,10 +22,14 @@ namespace CoreTiles.Desktop.InternalServices
         public string WeatherUndergroundUrl { get; set; }
     }
 
+    public class WeatherUpdate
+    {
+        public string Update { get; set; }
+    }
+
     public class Weather : Tile
     {
-        //todo implement tile for changes?
-        public override IDataTemplate DataTemplate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override IDataTemplate DataTemplate { get; } = new FuncDataTemplate<WeatherUpdate>((f, s) => new WeatherTileView { DataContext = f });
 
         private const string defaultMessage = "No Weather Data";
         private WeatherConfig weatherConfig = new WeatherConfig();
@@ -48,6 +54,8 @@ namespace CoreTiles.Desktop.InternalServices
             })
         };
 
+        public override Type ConfigType => typeof(WeatherConfig);
+
         private async Task<(int, string)> GetWeatherWunderground()
         {
             using var req = new HttpRequestMessage(HttpMethod.Get, weatherConfig.WeatherUndergroundUrl);
@@ -66,7 +74,7 @@ namespace CoreTiles.Desktop.InternalServices
             try
             {
                 var currentUrl = weatherConfig.WeatherUndergroundUrl;
-                weatherConfig = await Helpers.LoadConfigFile<Weather, WeatherConfig>();
+                weatherConfig = Helpers.GetConfig<Weather, WeatherConfig>();
                 weatherUrl.OnNext(weatherConfig.WeatherUndergroundUrl);
                 if (currentUrl != weatherConfig.WeatherUndergroundUrl)
                 {
@@ -103,6 +111,7 @@ namespace CoreTiles.Desktop.InternalServices
             });
         }
 
+        private int lastTemp;
         private async Task UpdateWeatherMiniTile()
         {
             var data = await GetWeatherWunderground();
@@ -138,10 +147,16 @@ namespace CoreTiles.Desktop.InternalServices
             }
             Log("Latest update: {0}", _infoLine);
             infoLine.OnNext(_infoLine);
+            if (lastTemp != data.Item1)
+            {
+                PushTileData(new WeatherUpdate
+                {
+                    Update = _infoLine
+                });
+            }
+            lastTemp = data.Item1;
         }
 
         public override Task InitializeDebug() => Initialize();
-
-        public override void Dispose() { }
     }
 }
