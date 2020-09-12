@@ -13,9 +13,10 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  winPath: '$(Build.ArtifactStagingDirectory)\coretiles-win'
-  linPath: '$(Build.ArtifactStagingDirectory)\coretiles-linux'
-  osxPath: '$(Build.ArtifactStagingDirectory)\coretiles-osx'
+  ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/tags/')) }}:
+    winPath: '$(Build.ArtifactStagingDirectory)\coretiles-win'
+    linPath: '$(Build.ArtifactStagingDirectory)\coretiles-linux'
+    osxPath: '$(Build.ArtifactStagingDirectory)\coretiles-osx'
   tagVersion: replace('$(Build.SourceBranch)', 'refs/tags/', '')
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
     winPath: '$(Build.ArtifactStagingDirectory)\coretiles-win-$(tagVersion)'
