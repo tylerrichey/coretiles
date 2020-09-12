@@ -25,8 +25,11 @@ variables:
   tagVersion: $[replace(variables['Build.SourceBranch'], 'refs/tags/', '')]
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
     winPath: '$(Build.ArtifactStagingDirectory)\coretiles-win-$(tagVersion)'
+    winPubPath: '$(Build.ArtifactStagingDirectory)\coretiles-win\coretiles-win-$(tagVersion).zip'
     linPath: '$(Build.ArtifactStagingDirectory)\coretiles-linux-$(tagVersion)'
+    linPubPath: '$(Build.ArtifactStagingDirectory)\coretiles-linux\coretiles-linux-$(tagVersion).zip'
     osxPath: '$(Build.ArtifactStagingDirectory)\coretiles-osx-$(tagVersion)'
+    osxPubPath: '$(Build.ArtifactStagingDirectory)\coretiles-osx\coretiles-osx-$(tagVersion).zip'
 
 steps:
 - task: DotNetCoreCLI@2
@@ -88,7 +91,7 @@ steps:
     repositoryName: tylerrichey/coretiles
     isDraft: true
     assets: |
-      $(winPath).zip
-      $(linPath).zip
-      $(osxPath).zip
+    $(winPubPath)
+    $(linPubPath)
+    $(osxPubPath)
   
