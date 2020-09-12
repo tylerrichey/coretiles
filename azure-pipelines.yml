@@ -91,7 +91,7 @@ steps:
     repositoryName: tylerrichey/coretiles
     isDraft: true
     assets: |
-    $(winPubPath)
-    $(linPubPath)
-    $(osxPubPath)
+      $(winPubPath)
+      $(linPubPath)
+      $(osxPubPath)
   
