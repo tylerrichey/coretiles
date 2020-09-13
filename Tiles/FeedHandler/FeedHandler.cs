@@ -110,12 +110,16 @@ namespace Tiles.FeedHandler
         //public override Task InitializeDebug() => Initialize();
         public override Task InitializeDebug()
         {
-            PushTileData(new FeedItem
+            _ = Task.Run(async () =>
             {
-                Title = "Title",
-                Link = "https://www.google.com",
-                Content = "Content",
-                PublishDate = DateTime.Now
+                await Task.Delay(2000);
+                PushTileData(new FeedItem
+                {
+                    Title = "Title",
+                    Link = "https://www.google.com",
+                    Content = "Content",
+                    PublishDate = DateTime.Now
+                });
             });
             return Task.CompletedTask;
         }

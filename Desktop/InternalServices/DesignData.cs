@@ -13,7 +13,13 @@ namespace CoreTiles.Desktop.InternalServices
         public static WeatherUpdate WeatherUpdate { get; } =
             new WeatherUpdate
             {
-                Update = "70°☀️"
+                Current = 59,
+                Conditions = "Smoke",
+                Low = "54°",
+                High = "72°",
+                TodayForecast = "Partly cloudy. Expect widespread areas of smoke and haze, reducing visibility at times. High 72F. Winds light and variable.",
+                Precipitation = "0% Precip.",
+                Emoji = "⛅"
             };
 
         public static TileViewModel TileViewModel { get; } =

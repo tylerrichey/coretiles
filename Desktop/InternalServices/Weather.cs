@@ -8,6 +8,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -24,7 +25,15 @@ namespace CoreTiles.Desktop.InternalServices
 
     public class WeatherUpdate
     {
-        public string Update { get; set; }
+        public string Conditions { get; set; }
+        public int Current { get; set; }
+        public string CurrentString => Current + "°";
+        public string FullConditions => Precipitation + @" - " + TodayForecast;
+        public string Low { get; set; }
+        public string High { get; set; }
+        public string TodayForecast { get; set; }
+        public string Precipitation { get; set; }
+        public string Emoji { get; set; }
     }
 
     public class Weather : Tile
@@ -56,7 +65,7 @@ namespace CoreTiles.Desktop.InternalServices
 
         public override Type ConfigType => typeof(WeatherConfig);
 
-        private async Task<(int, string)> GetWeatherWunderground()
+        private async Task<WeatherUpdate> GetWeatherWunderground()
         {
             using var req = new HttpRequestMessage(HttpMethod.Get, weatherConfig.WeatherUndergroundUrl);
             req.Headers.Add("User-Agent", "curl");
@@ -64,9 +73,21 @@ namespace CoreTiles.Desktop.InternalServices
             var data = await response.Content.ReadAsStringAsync();
             var page = new HtmlAgilityPack.HtmlDocument();
             page.LoadHtml(data);
-            var temp = page.DocumentNode.SelectSingleNode("/html/body/app-root/app-today/one-column-layout/wu-header/sidenav/mat-sidenav-container/mat-sidenav-content/div/section/div[3]/div[1]/div/div[1]/div[1]/lib-city-current-conditions/div/div[2]/div/div/div[2]/lib-display-unit/span/span[1]").InnerHtml;
-            var conditions = page.DocumentNode.SelectSingleNode("/html/body/app-root/app-today/one-column-layout/wu-header/sidenav/mat-sidenav-container/mat-sidenav-content/div/section/div[3]/div[1]/div/div[1]/div[1]/lib-city-current-conditions/div/div[3]/div/div[1]/p").InnerHtml;
-            return (Convert.ToInt32(temp), conditions);
+            var temp = page.DocumentNode.SelectSingleNode("/html/body/app-root/app-today/one-column-layout/wu-header/sidenav/mat-sidenav-container/mat-sidenav-content/div/section/div[3]/div[1]/div/div[1]/div[1]/lib-city-current-conditions/div/div[2]/div/div/div[2]/lib-display-unit/span/span[1]").InnerText;
+            var conditions = page.DocumentNode.SelectSingleNode("/html/body/app-root/app-today/one-column-layout/wu-header/sidenav/mat-sidenav-container/mat-sidenav-content/div/section/div[3]/div[1]/div/div[1]/div[1]/lib-city-current-conditions/div/div[3]/div/div[1]/p").InnerText;
+            var high = page.DocumentNode.SelectSingleNode("/html/body/app-root/app-today/one-column-layout/wu-header/sidenav/mat-sidenav-container/mat-sidenav-content/div/section/div[3]/div[1]/div/div[1]/div[1]/lib-city-current-conditions/div/div[2]/div/div/div[1]/span[1]").InnerText;
+            var low = page.DocumentNode.SelectSingleNode("/html/body/app-root/app-today/one-column-layout/wu-header/sidenav/mat-sidenav-container/mat-sidenav-content/div/section/div[3]/div[1]/div/div[1]/div[1]/lib-city-current-conditions/div/div[2]/div/div/div[1]/span[3]").InnerText;
+            var precip = page.DocumentNode.SelectSingleNode("/html/body/app-root/app-today/one-column-layout/wu-header/sidenav/mat-sidenav-container/mat-sidenav-content/div/section/div[3]/div[1]/div/div[3]/div/lib-city-today-forecast/div/div[1]/div/div/div/a[1]").InnerText;
+            var today = page.DocumentNode.SelectSingleNode("/html/body/app-root/app-today/one-column-layout/wu-header/sidenav/mat-sidenav-container/mat-sidenav-content/div/section/div[3]/div[1]/div/div[3]/div/lib-city-today-forecast/div/div[1]/div/div/div/a[2]").InnerText;
+            return new WeatherUpdate
+            {
+                Current = Convert.ToInt32(temp),
+                Conditions = conditions,
+                High = high,
+                Low = low,
+                Precipitation = WebUtility.HtmlDecode(precip),
+                TodayForecast = WebUtility.HtmlDecode(today)
+            };
         }
 
         public async Task ReloadConfig()
@@ -115,46 +136,45 @@ namespace CoreTiles.Desktop.InternalServices
         private async Task UpdateWeatherMiniTile()
         {
             var data = await GetWeatherWunderground();
-            var _infoLine = data.Item1 + "°";
-            var forecast = data.Item2.Trim().ToLower();
+            var forecast = data.Conditions.Trim().ToLower();
+            string emoji;
             if (forecast.Contains("partly"))
             {
-                _infoLine += "⛅";
+                emoji = "⛅";
             }
             else if (forecast.Contains("rain"))
             {
-                _infoLine += "🌧";
+                emoji = "🌧";
             }
             else if (forecast.Contains("cloud"))
             {
-                _infoLine += "☁️";
+                emoji = "☁️";
             }
             else if (forecast.Contains("sun"))
             {
-                _infoLine += "☀️";
+                emoji = "☀️";
             }
             else if ((forecast.Contains("clear") || forecast.Contains("fair")) && DateTime.Now.Hour > 6 && DateTime.Now.Hour < 20)
             {
-                _infoLine += "☀️";
+                emoji = "☀️";
             }
             else if (DateTime.Now.Hour < 6 && DateTime.Now.Hour > 20)
             {
-                _infoLine += "🌙";
+                emoji = "🌙";
             }
             else
             {
-                _infoLine += "⛅";
+                emoji = "⛅";
             }
-            Log("Latest update: {0}", _infoLine);
-            infoLine.OnNext(_infoLine);
-            if (lastTemp != data.Item1)
+            var miniTileText = data.Current + "°" + emoji;
+            Log("Latest update: {0}", miniTileText);
+            infoLine.OnNext(miniTileText);
+            data.Emoji = emoji;
+            if (lastTemp != data.Current)
             {
-                PushTileData(new WeatherUpdate
-                {
-                    Update = _infoLine
-                });
+                PushTileData(data);
             }
-            lastTemp = data.Item1;
+            lastTemp = data.Current;
         }
 
         public override Task InitializeDebug() => Initialize();
