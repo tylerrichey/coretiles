@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:dd="clr-namespace:CoreTiles.Tiles;assembly=Tiles.Twitter"
-             Design.DataContext="{x:Static dd:DesignData.TweetTileViewModelFile}"
+             Design.DataContext="{x:Static dd:DesignData.TweetTileViewModel}"
              Design.Width="500"
              Design.Height="350"
              x:Class="CoreTiles.Tiles.TweetTile">
@@ -27,11 +27,13 @@
   </UserControl.Styles>
   <Border Background="#495057" Padding="4" Margin="4" CornerRadius="3" BorderThickness="2" BorderBrush="#1da1f2">
     <StackPanel ClipToBounds="True">
-      <WrapPanel Name="NamePanel" Orientation="Horizontal" Cursor="Hand">
-        <TextBlock Foreground="OrangeRed" Text="{Binding ScreenName}" VerticalAlignment="Center" />
-        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-        <TextBlock Text="{Binding TweetTime}" VerticalAlignment="Center" />
-      </WrapPanel>
+      <Grid RowDefinitions="Auto" ColumnDefinitions="80*,20*">
+        <WrapPanel Name="NamePanel" Orientation="Horizontal" Cursor="Hand" Grid.Column="0" VerticalAlignment="Center">
+          <TextBlock Foreground="OrangeRed" Text="{Binding ScreenName}" VerticalAlignment="Center" />
+          <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+        </WrapPanel>
+        <TextBlock Text="{Binding TweetTime}" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" FontSize="11" />
+      </Grid>
       <WrapPanel Name="TweetPanel" Orientation="Horizontal" Cursor="Hand" IsVisible="{Binding ShowAll}">
         <TextBlock Text="{Binding TweetText}" />
       </WrapPanel>

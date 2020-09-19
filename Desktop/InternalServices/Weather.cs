@@ -158,7 +158,7 @@ namespace CoreTiles.Desktop.InternalServices
             {
                 emoji = "☀️";
             }
-            else if (DateTime.Now.Hour < 6 && DateTime.Now.Hour > 20)
+            else if (DateTime.Now.Hour <= 6 && DateTime.Now.Hour >= 20)
             {
                 emoji = "🌙";
             }

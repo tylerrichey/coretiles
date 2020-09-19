@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CoreTiles.Desktop.ViewModels
 {
-    class SystemTileViewModel : ViewModelBase
+    public class SystemTileViewModel : ViewModelBase
     {
         public LogViewer LogViewer { get; }
         public ReactiveCommand<Unit, Task> SaveItems { get; }

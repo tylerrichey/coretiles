@@ -64,6 +64,9 @@ namespace CoreTiles.Desktop.Views
                         .Subscribe(v => vm.BufferItems = v != 0);
 
                     var scrollHomeObv = vm.ScrollToHome.Subscribe(_ => scrollViewer.ScrollToHome());
+
+                    this.PointerMoved += (s, e) => vm.BufferItems = true;
+                    this.PointerLeave += (s, e) => vm.BufferItems = false;
                 });
         }
 

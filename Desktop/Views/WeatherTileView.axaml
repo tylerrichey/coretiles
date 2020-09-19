@@ -4,18 +4,18 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:dd="clr-namespace:CoreTiles.Desktop.InternalServices;assembly=CoreTiles.Desktop"
              Design.DataContext="{x:Static dd:DesignData.WeatherUpdate}"
-             Design.Width="450"
+             Design.Width="490"
              Height="150"
              x:Class="CoreTiles.Desktop.Views.WeatherTileView">
   <Border Background="#495057" Padding="4" Margin="4" CornerRadius="3" BorderThickness="2" BorderBrush="Azure" ClipToBounds="True">
-    <Grid ColumnDefinitions="60*,40*" RowDefinitions="50*,50*">
+    <Grid ColumnDefinitions="70*,30*" RowDefinitions="50*,50*" VerticalAlignment="Center" HorizontalAlignment="Center">
       <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
         <WrapPanel Orientation="Horizontal">
           <TextBlock FontSize="50" Text="{Binding CurrentString}" VerticalAlignment="Center" Padding="4" />
-          <TextBlock FontSize="22" Text="{Binding Conditions}" VerticalAlignment="Center" Padding="18" />
-          <TextBlock FontSize="18" Text="{Binding High}" VerticalAlignment="Center" Foreground="Red" />
-          <TextBlock FontSize="18" Text=" | " VerticalAlignment="Center" />
-          <TextBlock FontSize="18" Text="{Binding Low}"  VerticalAlignment="Center" Foreground="Blue" />
+          <TextBlock FontSize="20" Text="{Binding Conditions}" VerticalAlignment="Center" Padding="18" />
+          <TextBlock FontSize="16" Text="{Binding High}" VerticalAlignment="Center" Foreground="Red" />
+          <TextBlock FontSize="16" Text=" | " VerticalAlignment="Center" />
+          <TextBlock FontSize="16" Text="{Binding Low}"  VerticalAlignment="Center" Foreground="Blue" />
         </WrapPanel>
       </StackPanel>
       <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1">

@@ -43,8 +43,6 @@ namespace CoreTiles.Desktop.InternalServices
                 {
                     var window = new SystemTileConfigWindow
                     {
-                        Height = 500,
-                        Width = 1200,
                         DataContext = new SystemTileViewModel(this.GetLogViewerControl())
                     };
                     if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

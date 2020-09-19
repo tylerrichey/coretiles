@@ -29,6 +29,7 @@ You can watch the game 𝗟𝗜𝗩𝗘 on 𝗟𝗙𝗖𝗧𝗩 and 𝗟𝗙𝗖
                 PhotoButtonLabel = "Photo",
                 PhotoButtonEnabled = true,
                 VideoButtonEnabled = true,
+                ShowAll = true
             };
 
         public static TweetTileViewModel TweetTileViewModelFile
