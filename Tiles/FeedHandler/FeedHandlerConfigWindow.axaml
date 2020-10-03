@@ -3,11 +3,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dd="clr-namespace:Tiles.FeedHandler;assembly=Tiles.FeedHandler"
+        xmlns:picker="clr-namespace:ThemeEditor.Controls.ColorPicker;assembly=ThemeEditor.Controls.ColorPicker"
         Design.DataContext="{x:Static dd:DesignData.FeedHandlerConfigWindowViewModel}"
         Height="800" Width="600"
         Title="Feed Handler Configuration"
         Icon="/avalonia-logo.ico"
         x:Class="Tiles.FeedHandler.FeedHandlerConfigWindow">
+  <Window.Resources>
+    <picker:HexToColorConverter x:Key="HexToColorConverter" />
+  </Window.Resources>
   <Window.Styles>
     <Style Selector="TextBlock">
       <Setter Property="Padding" Value="4" />
@@ -50,7 +54,7 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <Grid ColumnDefinitions="20*,80*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="6">
+            <Grid ColumnDefinitions="20*,80*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="6">
               <TextBlock Grid.Column="0" Grid.Row="0" Text="Url:" VerticalAlignment="Center" />
               <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Url}" VerticalAlignment="Center"/>
               <TextBlock Grid.Column="0" Grid.Row="1" Text="Check Every:" VerticalAlignment="Center"/>
@@ -59,7 +63,10 @@
               <CheckBox Grid.Column="1" Grid.Row="2" IsChecked="{Binding Enabled}" VerticalAlignment="Center"/>
               <TextBlock Grid.Column="0" Grid.Row="3" Text="Regex:" VerticalAlignment="Center" />
               <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Regex}" VerticalAlignment="Center"/>
-              <Button Grid.Column="1" Grid.Row="4" Command="{Binding $parent[2].DataContext.DelItem}" CommandParameter="{Binding Url}">
+              <TextBlock Grid.Column="0" Grid.Row="4" Text="Tile Color:" VerticalAlignment="Center" />
+              <!--<TextBox Grid.Column="1" Grid.Row="4" Text="{Binding TileColor}" VerticalAlignment="Center"/>-->
+              <picker:ColorPicker Color="{Binding TileColor, Mode=TwoWay, Converter={StaticResource HexToColorConverter}}" Grid.Column="1" Grid.Row="4" />
+              <Button Grid.Column="1" Grid.Row="5" Command="{Binding $parent[2].DataContext.DelItem}" CommandParameter="{Binding Url}">
                 Remove
               </Button>
             </Grid>
@@ -68,4 +75,5 @@
       </ItemsControl>
     </DockPanel>
   </ScrollViewer>
+
 </Window>

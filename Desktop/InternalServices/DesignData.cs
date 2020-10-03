@@ -15,12 +15,12 @@ namespace CoreTiles.Desktop.InternalServices
             new WeatherUpdate
             {
                 Current = 59,
-                Conditions = "Mostly Cloudy",
+                Conditions = "Showers in the Vicinity",
                 Low = "54°",
                 High = "72°",
                 TodayForecast = "Partly cloudy. Expect widespread areas of smoke and haze, reducing visibility at times. High 72F. Winds light and variable.",
                 Precipitation = "0% Precip.",
-                Emoji = "⛅"
+                Emoji = "☀️"
             };
 
         public static TileViewModel TileViewModel { get; } =

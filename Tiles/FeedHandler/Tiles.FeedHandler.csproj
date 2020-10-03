@@ -18,6 +18,7 @@
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.0-preview5" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0-preview5" />
     <PackageReference Include="FeedParserCore" Version="2.0.0" />
+    <PackageReference Include="ThemeEditor.Controls.ColorPicker" Version="0.9.4" />
   </ItemGroup>
   
   <ItemGroup>

@@ -122,7 +122,7 @@ namespace CoreTiles.Desktop.ViewModels
                 {
                     while (true)
                     {
-                        if (!BufferItems && ItemsBuffer.Any())
+                        if (!BufferItems && ItemsBuffer.Count > 0)
                         {
                             ItemsBuffer.ToList()
                                 .ForEach(InsertNewTile);
@@ -147,7 +147,7 @@ namespace CoreTiles.Desktop.ViewModels
                             }
                         }
 
-                        await Task.Delay(50);
+                        await Task.Delay(500);
                     }
                 }
                 catch (Exception e)

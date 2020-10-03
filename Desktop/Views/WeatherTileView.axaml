@@ -10,20 +10,22 @@
   <Border Background="#495057" Padding="4" Margin="4" CornerRadius="3" BorderThickness="2" BorderBrush="Azure" ClipToBounds="True">
     <Grid ColumnDefinitions="70*,30*" RowDefinitions="50*,50*" VerticalAlignment="Center" HorizontalAlignment="Center">
       <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
-        <WrapPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal">
           <TextBlock FontSize="50" Text="{Binding CurrentString}" VerticalAlignment="Center" Padding="4" />
-          <TextBlock FontSize="20" Text="{Binding Conditions}" VerticalAlignment="Center" Padding="18" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock FontSize="20" Text="{Binding Conditions}" VerticalAlignment="Center" Padding="8" />
+          </Viewbox>
           <TextBlock FontSize="16" Text="{Binding High}" VerticalAlignment="Center" Foreground="Red" />
           <TextBlock FontSize="16" Text=" | " VerticalAlignment="Center" />
           <TextBlock FontSize="16" Text="{Binding Low}"  VerticalAlignment="Center" Foreground="Blue" />
-        </WrapPanel>
+        </StackPanel>
       </StackPanel>
       <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1">
         <Viewbox Stretch="Uniform" Height="110" HorizontalAlignment="Center" Margin="4">
           <TextBlock Text="{Binding Emoji}" Padding="3" />
         </Viewbox>
       </StackPanel>
-      <WrapPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="2">
+      <WrapPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0">
         <TextBlock FontSize="14" Text="{Binding FullConditions}" TextWrapping="Wrap" TextTrimming="WordEllipsis" Padding="4" HorizontalAlignment="Center" />
       </WrapPanel>
     </Grid>

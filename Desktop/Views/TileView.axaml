@@ -6,6 +6,20 @@
              Design.DataContext="{x:Static dd:DesignData.TileViewModel}"
              xmlns:tiles="clr-namespace:CoreTiles.Desktop.Tiles"
              x:Class="CoreTiles.Desktop.Views.TileView">
+  <UserControl.Styles>
+    <Style Selector="tiles|BaseTile">
+      <Style.Animations>
+        <Animation Duration="0:0:1">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0.0"/>
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1.0"/>
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+  </UserControl.Styles>
   <DockPanel>
     <Menu DockPanel.Dock="Bottom" Items="{Binding MiniTiles}">
       <Menu.Styles>

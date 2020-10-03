@@ -28,24 +28,32 @@ namespace Tiles.FeedHandler
             Foreground = Brush.Parse("#ff4500"),
             Command = ReactiveCommand.Create(async () =>
             {
-                var window = new FeedHandlerConfigWindow
+                try
                 {
-                    DataContext = new FeedHandlerConfigWindowViewModel(GetLogViewerControl())
-                };
-                if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
-                    && await window.ShowDialog<bool>(desktop.MainWindow))
-                {
-                    Log("Restarting feed handlers...");
-                    cancellationTokenSource.Cancel();
-                    while (tasks.Any(t => t.Status == TaskStatus.Running))
+                    var window = new FeedHandlerConfigWindow
                     {
-                        Log("Waiting for tasks to cancel...");
-                        await Task.Delay(500);
+                        DataContext = new FeedHandlerConfigWindowViewModel(GetLogViewerControl())
+                    };
+                    if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
+                        && await window.ShowDialog<bool>(desktop.MainWindow))
+                    {
+                        Log("Restarting feed handlers...");
+                        cancellationTokenSource.Cancel();
+                        while (tasks.Any(t => t.Status == TaskStatus.Running))
+                        {
+                            Log("Waiting for tasks to cancel...");
+                            await Task.Delay(500);
+                        }
+                        cancellationTokenSource = new CancellationTokenSource();
+                        tasks.Clear();
+                        InitializeFeedHandlers();
                     }
-                    cancellationTokenSource = new CancellationTokenSource();
-                    tasks.Clear();
-                    InitializeFeedHandlers();
                 }
+                catch
+                {
+                    throw;
+                }
+                
             })
         };
 
