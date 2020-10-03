@@ -20,11 +20,9 @@
           <TextBlock FontSize="16" Text="{Binding Low}"  VerticalAlignment="Center" Foreground="Blue" />
         </StackPanel>
       </StackPanel>
-      <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1">
-        <Viewbox Stretch="Uniform" Height="110" HorizontalAlignment="Center" Margin="4">
-          <TextBlock Text="{Binding Emoji}" Padding="3" />
-        </Viewbox>
-      </StackPanel>
+      <Viewbox Stretch="Uniform" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Center" Margin="4" VerticalAlignment="Center">
+        <TextBlock Text="{Binding Emoji}" Padding="3" />
+      </Viewbox>
       <WrapPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0">
         <TextBlock FontSize="14" Text="{Binding FullConditions}" TextWrapping="Wrap" TextTrimming="WordEllipsis" Padding="4" HorizontalAlignment="Center" />
       </WrapPanel>
