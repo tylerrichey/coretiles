@@ -16,6 +16,5 @@ namespace Tiles.FeedHandler
         public int CheckEveryMinutes { get; set; }
         public bool Enabled { get; set; }
         public string Regex { get; set; }
-        public string TileColor { get; set; }
     }
 }

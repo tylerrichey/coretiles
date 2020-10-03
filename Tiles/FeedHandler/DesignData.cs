@@ -32,8 +32,8 @@ namespace Tiles.FeedHandler
                 var vm = new FeedHandlerConfigWindowViewModel(new LogViewer { DataContext = logv });
                 vm.Feeds = new ObservableCollection<FeedHandlerConfig>
                 {
-                    new FeedHandlerConfig { Url = "https://www.reddit.com/r/LiverpoolFC/new/.rss", CheckEveryMinutes = 5, Enabled = true, Regex = ".*", TileColor = "#495057" },
-                    new FeedHandlerConfig { Url = "https://www.reddit.com/r/WatchURaffle/new/.rss", CheckEveryMinutes = 10, Enabled = false, Regex = ".*(?i)(iwc|omega|rolex).*", TileColor = "#495057" }
+                    new FeedHandlerConfig { Url = "https://www.reddit.com/r/LiverpoolFC/new/.rss", CheckEveryMinutes = 5, Enabled = true, Regex = ".*" },
+                    new FeedHandlerConfig { Url = "https://www.reddit.com/r/WatchURaffle/new/.rss", CheckEveryMinutes = 10, Enabled = false, Regex = ".*(?i)(iwc|omega|rolex).*" }
                  };
                 return vm;
             }
