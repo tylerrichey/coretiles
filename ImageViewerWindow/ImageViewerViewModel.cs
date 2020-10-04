@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ImageViewerWindow
 {
@@ -35,24 +36,26 @@ namespace ImageViewerWindow
             _urls = urls.ToList();
             bitmaps = new Bitmap[_urls.Count];
 
-            SetImageByIndex(index);
+            ReactiveCommand.Create(async () => await SetImageByIndex(index))
+                .Execute()
+                .Subscribe();
         }
 
-        public void Next()
+        public async Task Next()
         {
             if (_urls.Count > 1)
             {
                 index = index + 1 > _urls.Count ? 1 : index + 1;
-                SetImageByIndex(index);
+                await SetImageByIndex(index);
             }
         }
         
-        private void SetImageByIndex(int index)
+        private async Task SetImageByIndex(int index)
         {
             var arrayIndex = index - 1;
             if (bitmaps[arrayIndex] == null)
             {
-                var bytes = Helpers.HttpClient.GetByteArrayAsync(_urls[arrayIndex]).Result;
+                var bytes = await Helpers.HttpClient.GetByteArrayAsync(_urls[arrayIndex]);
                 using var memoryStream = new MemoryStream(bytes);
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 bitmaps[arrayIndex] = new Bitmap(memoryStream);

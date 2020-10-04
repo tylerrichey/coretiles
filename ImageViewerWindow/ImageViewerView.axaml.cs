@@ -1,5 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using ReactiveUI;
+using System;
 
 namespace ImageViewerWindow
 {
@@ -12,7 +14,9 @@ namespace ImageViewerWindow
             AvaloniaXamlLoader.Load(this);
 
             this.LostFocus += (s, e) => this.Close();
-            this.PointerPressed += (s, e) => ((ImageViewerViewModel)DataContext)?.Next();
+
+            var nextCommand = ReactiveCommand.Create(async () => await ((ImageViewerViewModel)DataContext)?.Next());
+            this.PointerPressed += (s, e) => nextCommand.Execute().Subscribe();
         }
     }
 }
