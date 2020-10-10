@@ -7,7 +7,7 @@
              Design.Width="490"
              Height="150"
              x:Class="CoreTiles.Desktop.Views.WeatherTileView">
-  <Border Background="#495057" Padding="4" Margin="4" CornerRadius="3" BorderThickness="2" BorderBrush="Azure" ClipToBounds="True">
+  <Border Background="#1E2023" Padding="4" Margin="4" CornerRadius="3" BorderThickness="2" BorderBrush="Azure" ClipToBounds="True">
     <Grid ColumnDefinitions="70*,30*" RowDefinitions="50*,50*" VerticalAlignment="Center" HorizontalAlignment="Center">
       <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
         <StackPanel Orientation="Horizontal">
