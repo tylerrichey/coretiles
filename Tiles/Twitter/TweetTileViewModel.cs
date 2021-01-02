@@ -28,7 +28,6 @@ namespace CoreTiles.Tiles
         public string TweetTime { get; set; }
         public string StatsCount { get; set; }
         public string FavoriteCount { get; set; }
-        public string PhotoButtonLabel { get; set; }
         public ReactiveCommand<Unit, Task> PhotoCommand { get; set; }
         public ReactiveCommand<Unit, Unit> VideoCommand { get; set; }
         public bool PhotoButtonEnabled { get; set; }
@@ -95,8 +94,7 @@ namespace CoreTiles.Tiles
             }
 
             var photos = tweet.Media.Where(m => m.MediaType == "photo");
-            PhotoButtonLabel = photos.Count() > 1 ? "Photos" : "Photo";
-            PhotoButtonEnabled = photos.Any();
+            PhotoButtonEnabled = photos.Count() > 1;
             PhotoCommand = ReactiveCommand.Create(async () =>
             {
                 using var viewModel = new ImageViewerViewModel(photos.Select(u => u.MediaURL));

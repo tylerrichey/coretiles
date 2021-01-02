@@ -40,7 +40,7 @@
       <WrapPanel Name="StatsPanel" Orientation="Horizontal" Cursor="Hand" IsVisible="{Binding ShowAll}">
         <TextBlock Text="{Binding StatsCount}" VerticalAlignment="Center" />
         <TextBlock Text="{Binding FavoriteCount}" VerticalAlignment="Center" />
-        <Button IsVisible="{Binding PhotoButtonEnabled}" IsEnabled="{Binding PhotoButtonEnabled}" Content="{Binding PhotoButtonLabel}" Command="{Binding PhotoCommand}" VerticalAlignment="Center" />
+        <Button IsVisible="{Binding PhotoButtonEnabled}" IsEnabled="{Binding PhotoButtonEnabled}" Content="Photos" Command="{Binding PhotoCommand}" VerticalAlignment="Center" />
         <Button IsVisible="{Binding VideoButtonEnabled}" IsEnabled="{Binding VideoButtonEnabled}" Content="Video" Command="{Binding VideoCommand}" VerticalAlignment="Center" />
       </WrapPanel>
       <Border>

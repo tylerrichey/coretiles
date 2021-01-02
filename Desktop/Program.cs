@@ -47,7 +47,7 @@ namespace CoreTiles.Desktop
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .LogToDebug(Avalonia.Logging.LogEventLevel.Information)
+                .LogToTrace(Avalonia.Logging.LogEventLevel.Information)
                 .UseReactiveUI();
     }
 }
