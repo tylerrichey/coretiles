@@ -75,16 +75,16 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-      pathtoPublish: '$(winPath)'
+      pathtoPublish: '$(winPath)\coretiles-win\coretiles-win.zip'
       artifactName: 'coretiles-win'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$(linPath)' 
+    pathtoPublish: '$(linPath)\coretiles-linux\coretiles-linux.zip' 
     artifactName: 'coretiles-linux'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$(osxPath)'
+    pathtoPublish: '$(osxPath)\coretiles-osx\coretiles-osx.zip'
     artifactName: 'coretiles-osx'
 

@@ -19,6 +19,7 @@ using Avalonia.Media.Imaging;
 using Tweetinvi.Parameters;
 using Tiles.Twitter;
 using Avalonia.Controls.ApplicationLifetimes;
+using System.Collections.Generic;
 
 namespace CoreTiles.Tiles
 {
@@ -62,8 +63,6 @@ namespace CoreTiles.Tiles
 
         public override async Task Initialize() => await InitTweetinvi();
 
-        IFilteredStream stream;
-
         private async Task InitTweetinvi()
         {
             MarkConnected(false);
@@ -73,12 +72,18 @@ namespace CoreTiles.Tiles
                 Log("Twitter configuration missing!");
                 return;
             }
-            Auth.SetUserCredentials(twitterConfig.ConsumerKey, twitterConfig.ConsumerSecret, twitterConfig.UserAccessToken, twitterConfig.UserAccessSecret);
-            RateLimit.RateLimitTrackerMode = RateLimitTrackerMode.TrackAndAwait;
 
-            stream = Tweetinvi.Stream.CreateFilteredStream();
-            var friends = await User.GetAuthenticatedUser().GetFriendIdsAsync();
-            friends.ForEach(f => stream.AddFollow(f));
+            var twitterClient = new TwitterClient(twitterConfig.ConsumerKey, twitterConfig.ConsumerSecret, twitterConfig.UserAccessToken, twitterConfig.UserAccessSecret);
+            twitterClient.Config.RateLimitTrackerMode = RateLimitTrackerMode.TrackAndAwait;
+
+            var stream = twitterClient.Streams.CreateFilteredStream();
+            var user = await twitterClient.Users.GetAuthenticatedUserAsync();
+            var friends = user.GetFriendIds();
+            while (!friends.Completed)
+            {
+                var page = await friends.NextPageAsync();
+                page.ForEach(id => stream.AddFollow(id));
+            }
             stream.MatchOn = MatchOn.Follower;
             stream.MatchingTweetReceived += (s, e) =>
             {
@@ -97,16 +102,18 @@ namespace CoreTiles.Tiles
                 Log("Stream stopped: " + string.Join(" - ", e.Exception.Message, e.DisconnectMessage));
                 MarkConnected(false);
                 Thread.Sleep(1000);
-                _ = stream.StartStreamMatchingAllConditionsAsync();
+                stream.StartMatchingAllConditionsAsync().Wait();
             };
-            
-            var currentTimeline = await User.GetAuthenticatedUser().GetHomeTimelineAsync(20);
-            foreach (var t in currentTimeline.OrderBy(c => c.CreatedAt))
+
+            var currentTimeline = await user.GetHomeTimelineAsync();
+            foreach (var t in currentTimeline.OrderByDescending(c => c.CreatedAt.LocalDateTime)
+                .Take(20)
+                .OrderBy(c => c.CreatedAt.LocalDateTime))
             {
                 PushTileData(t);
             }
 
-            _ = stream.StartStreamMatchingAllConditionsAsync();
+            await stream.StartMatchingAllConditionsAsync();
         }
 
         private void MarkConnected(bool connected = true)
@@ -121,8 +128,9 @@ namespace CoreTiles.Tiles
             const string dataFile = "sample.json";
             using var streamReader = new StreamReader(dataFile);
             var json = await streamReader.ReadToEndAsync();
-            var tweetDTOs = json.ConvertJsonTo<ITweetDTO[]>();
-            foreach (var tweet in Tweet.GenerateTweetsFromDTO(tweetDTOs.Take(10)))
+            var client = new TwitterClient(string.Empty, string.Empty);
+            var tweetDTOs = client.Json.Deserialize<IEnumerable<ITweetDTO>>(json);
+            foreach (var tweet in client.Factories.CreateTweets(tweetDTOs).Take(10))
             {
                 PushTileData(tweet);
             }

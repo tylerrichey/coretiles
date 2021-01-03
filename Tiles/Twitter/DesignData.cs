@@ -9,6 +9,8 @@ namespace CoreTiles.Tiles
 {
     public static class DesignData
     {
+        private static TwitterClient twitterClient = new TwitterClient(string.Empty, string.Empty);
+
         public static TweetTileViewModel TweetTileViewModel { get; } =
             new TweetTileViewModel
             {
@@ -38,8 +40,8 @@ You can watch the game 𝗟𝗜𝗩𝗘 on 𝗟𝗙𝗖𝗧𝗩 and 𝗟𝗙𝗖
                 //todo replace with file with single tweet
                 const string dataFile = @"C:\Users\Tyler\source\repos\CoreTiles\Tiles\Twitter\sample.json";
                 var json = File.ReadAllText(dataFile);
-                var tweetDTO = json.ConvertJsonTo<ITweetDTO[]>()[12];
-                return new TweetTileViewModel(Tweet.GenerateTweetFromDTO(tweetDTO));
+                var tweetDTO = twitterClient.Json.Deserialize<ITweetDTO[]>(json)[12];
+                return new TweetTileViewModel(twitterClient.Factories.CreateTweet(tweetDTO));
             }
         }
 

@@ -66,7 +66,7 @@ namespace CoreTiles.Tiles
                 TweetText = tweet.FullText;
             }
             TweetText = WebUtility.HtmlDecode(TweetText);
-            TweetTime = "⏰" + tweet.CreatedAt.ToShortTimeString().Replace(" ", "");
+            TweetTime = "⏰" + tweet.CreatedAt.LocalDateTime.ToShortTimeString().Replace(" ", "");
             var stats = tweet.RetweetCount + tweet.ReplyCount.GetValueOrDefault() + tweet.QuoteCount.GetValueOrDefault();
             StatsCount = stats > 0 && !(tweet.IsRetweet && tweet.RetweetedTweet.QuotedTweet == null) ? "🔁" + stats : string.Empty;
             FavoriteCount = tweet.FavoriteCount > 0 && !(tweet.IsRetweet && tweet.RetweetedTweet.QuotedTweet == null) ? "❤️" + tweet.FavoriteCount : string.Empty;
