@@ -50,21 +50,21 @@ steps:
     command: publish
     publishWebProjects: False
     arguments: '-p:PublishProfile=WinProfile -o $(winPath)'
-    zipAfterPublish: true
+    #zipAfterPublish: true
 
 - task: DotNetCoreCLI@2
   inputs:
     command: publish
     publishWebProjects: False
     arguments: '-p:PublishProfile=LinuxProfile -o $(linPath)'
-    zipAfterPublish: True
+    #zipAfterPublish: True
 
 - task: DotNetCoreCLI@2
   inputs:
     command: publish
     publishWebProjects: False
     arguments: '-p:PublishProfile=OSXProfile -o $(osxPath)'
-    zipAfterPublish: True
+    #zipAfterPublish: True
 
 - task: GithubRelease@0 
   displayName: 'Create GitHub Release'
@@ -75,16 +75,16 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-      pathtoPublish: '$(winPath)\coretiles-win\coretiles-win.zip'
+      pathtoPublish: '$(winPath)'
       artifactName: 'coretiles-win'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$(linPath)\coretiles-linux\coretiles-linux.zip' 
+    pathtoPublish: '$(linPath)' 
     artifactName: 'coretiles-linux'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$(osxPath)\coretiles-osx\coretiles-osx.zip'
+    pathtoPublish: '$(osxPath)'
     artifactName: 'coretiles-osx'
 
