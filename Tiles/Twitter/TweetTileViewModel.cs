@@ -17,6 +17,7 @@ using Tweetinvi.Models;
 using NeoSmart.Unicode;
 using System.Text.RegularExpressions;
 using Avalonia.Media;
+using Avalonia.Input;
 
 namespace CoreTiles.Tiles
 {
@@ -135,25 +136,33 @@ namespace CoreTiles.Tiles
                         };
                 }
             }
-            else
+            else if (photos.Count() == 1)
             {
-                if (photos.Count() == 1)
+                ReactiveCommand.Create(async () =>
                 {
-                    ReactiveCommand.Create(async () =>
+                    var bytes = await Helpers.HttpClient.GetByteArrayAsync(photos.Select(u => u.MediaURL).First());
+                    using var memoryStream = new MemoryStream(bytes);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    var bitmap = new Bitmap(memoryStream);
+                    EmbeddedControl = new Viewbox
                     {
-                        var bytes = await Helpers.HttpClient.GetByteArrayAsync(photos.Select(u => u.MediaURL).First());
-                        using var memoryStream = new MemoryStream(bytes);
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-                        EmbeddedControl = new Viewbox
+                        Stretch = Stretch.Uniform,
+                        Child = new Image
                         {
-                            Stretch = Stretch.Uniform,
-                            Child = new Image
-                            {
-                                Source = new Bitmap(memoryStream)
-                            }
+                            Source = bitmap
+                        },
+                        Cursor = Cursor.Parse("Hand")
+                    };
+                    EmbeddedControl.PointerReleased += async (s, e) =>
+                    {
+                        var imageViewer = new ImageViewer
+                        {
+                            DataContext = new ImageViewerViewModel(bitmap)
                         };
-                    }).Execute().Subscribe();
-                }
+                        var window = new Window();
+                        await imageViewer.ShowDialog(window);
+                    };
+                }).Execute().Subscribe();
             }
         }
 
