@@ -46,7 +46,7 @@ namespace Tiles.FeedHandler
             DelItem = ReactiveCommand.Create<string>(url => Feeds.Remove(Feeds.First(f => f.Url == url)));
             SaveItems = ReactiveCommand.Create(async () =>
             {
-                await Helpers.SaveConfigFile<FeedHandler>(Feeds);
+                await Helpers.SaveConfigFile<FeedHandler>(Feeds.ToList());
                 CloseWindow.OnNext(true);
             });
             Cancel = ReactiveCommand.Create(() => CloseWindow.OnNext(false));

@@ -19,7 +19,7 @@ namespace Tiles.FeedHandler
 {
     public class FeedHandler : Tile
     {
-        public override IDataTemplate DataTemplate { get; } = new FuncDataTemplate<FeedItem>((f, s) =>
+        public override IDataTemplate DataTemplate { get; } = new FuncDataTemplate<FeedHandlerItem>((f, s) =>
             new FeedHandlerTile { DataContext = new FeedHandlerViewModel(f) });
 
         public override MenuItem MiniTile => new MenuItem
@@ -68,7 +68,6 @@ namespace Tiles.FeedHandler
             _ = Task.Run(() =>
             {
                 var config = Helpers.GetConfig<FeedHandler, List<FeedHandlerConfig>>();
-                var rando = new Random();
                 foreach (var f in config.Where(c => c.Enabled))
                 {
                     tasks.Add(Task.Run(async () =>
@@ -85,10 +84,15 @@ namespace Tiles.FeedHandler
                                     .ToList();
                                 if (items.Count > 0)
                                 {
-                                    foreach (var i in items)
+                                    items.ConvertAll(tmpItem => new FeedHandlerItem
                                     {
-                                        PushTileData(i);
-                                    }
+                                        FeedName = f.Name,
+                                        Link = tmpItem.Link,
+                                        Content = tmpItem.Content,
+                                        Title = tmpItem.Title,
+                                        PublishDate = tmpItem.PublishDate
+                                    }).ForEach(PushTileData);
+
                                     lastSuccessfulCheck = items.Max(i => i.PublishDate);
                                 }
                                 Log($"Successful for {f.Url} - Retrieved: {feed.Count()} - Displayed: {items.Count}");
@@ -113,12 +117,13 @@ namespace Tiles.FeedHandler
             _ = Task.Run(async () =>
             {
                 await Task.Delay(2000);
-                PushTileData(new FeedItem
+                PushTileData(new FeedHandlerItem
                 {
                     Title = "Title",
                     Link = "https://www.google.com",
                     Content = "Content",
-                    PublishDate = DateTime.Now
+                    PublishDate = DateTime.Now,
+                    FeedName = "Feed Name"
                 });
             });
             menuTileString.OnNext("❌Mock!");

@@ -50,16 +50,18 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <Grid ColumnDefinitions="20*,80*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="6">
-              <TextBlock Grid.Column="0" Grid.Row="0" Text="Url:" VerticalAlignment="Center" />
-              <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Url}" VerticalAlignment="Center"/>
-              <TextBlock Grid.Column="0" Grid.Row="1" Text="Check Every:" VerticalAlignment="Center"/>
-              <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding CheckEveryMinutes}" VerticalAlignment="Center"/>
-              <TextBlock Grid.Column="0" Grid.Row="2" Text="Enabled:" VerticalAlignment="Center"/>
-              <CheckBox Grid.Column="1" Grid.Row="2" IsChecked="{Binding Enabled}" VerticalAlignment="Center"/>
-              <TextBlock Grid.Column="0" Grid.Row="3" Text="Regex:" VerticalAlignment="Center" />
-              <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Regex}" VerticalAlignment="Center"/>
-              <Button Grid.Column="1" Grid.Row="4" Command="{Binding $parent[2].DataContext.DelItem}" CommandParameter="{Binding Url}">
+            <Grid ColumnDefinitions="20*,80*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="6">
+              <TextBlock Grid.Column="0" Grid.Row="0" Text="Name:" VerticalAlignment="Center" />
+              <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Name}" VerticalAlignment="Center"/>
+              <TextBlock Grid.Column="0" Grid.Row="1" Text="Url:" VerticalAlignment="Center" />
+              <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Url}" VerticalAlignment="Center"/>
+              <TextBlock Grid.Column="0" Grid.Row="2" Text="Check Every:" VerticalAlignment="Center"/>
+              <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding CheckEveryMinutes}" VerticalAlignment="Center"/>
+              <TextBlock Grid.Column="0" Grid.Row="3" Text="Enabled:" VerticalAlignment="Center"/>
+              <CheckBox Grid.Column="1" Grid.Row="3" IsChecked="{Binding Enabled}" VerticalAlignment="Center"/>
+              <TextBlock Grid.Column="0" Grid.Row="4" Text="Regex:" VerticalAlignment="Center" />
+              <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding Regex}" VerticalAlignment="Center"/>
+              <Button Grid.Column="1" Grid.Row="5" Command="{Binding $parent[2].DataContext.DelItem}" CommandParameter="{Binding Url}">
                 Remove
               </Button>
             </Grid>

@@ -12,11 +12,13 @@ namespace Tiles.FeedHandler
         public string Title { get; }
         public string Content { get; }
         public string PublishDate { get; }
+        public string FeedName { get; }
 
         public ReactiveCommand<string, Unit> LaunchUrl { get; }
 
-        public FeedHandlerViewModel(FeedItem feedItem)
+        public FeedHandlerViewModel(FeedHandlerItem feedItem)
         {
+            FeedName = feedItem.FeedName;
             //todo do something with content? it's often html...
             var content = feedItem.Content.Length > 400 ? feedItem.Content.Substring(0, 397) + "..." : feedItem.Content;
             Link = feedItem.Link;

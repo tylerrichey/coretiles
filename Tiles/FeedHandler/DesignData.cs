@@ -10,13 +10,14 @@ namespace Tiles.FeedHandler
     public static class DesignData
     {
         public static FeedHandlerViewModel FeedHandlerViewModel { get; } =
-            new FeedHandlerViewModel(new FeedItem
+            new FeedHandlerViewModel(new FeedHandlerItem
             {
                 Title = "Liverpool to face Blackpool in pre-season friendly",
                 Link = "https://www.reddit.com/r/LiverpoolFC/comments/il6chr/liverpool_to_face_blackpool_in_preseason_friendly/",
                 Content = @"Here's is some content....................................
 ................................................",
-                PublishDate = DateTime.Now
+                PublishDate = DateTime.Now,
+                FeedName = "Feed Name"
             });
 
         public static FeedHandlerConfigWindowViewModel FeedHandlerConfigWindowViewModel
