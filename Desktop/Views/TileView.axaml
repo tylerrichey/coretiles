@@ -4,10 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:dd="clr-namespace:CoreTiles.Desktop.InternalServices;assembly=CoreTiles.Desktop"
              Design.DataContext="{x:Static dd:DesignData.TileViewModel}"
-             xmlns:tiles="clr-namespace:CoreTiles.Desktop.Tiles"
+             xmlns:main="clr-namespace:CoreTiles.Desktop"
              x:Class="CoreTiles.Desktop.Views.TileView">
   <UserControl.Styles>
-    <Style Selector="tiles|BaseTile">
+    <Style Selector="main|TileContainerView">
       <Style.Animations>
         <Animation Duration="0:0:1">
           <KeyFrame Cue="0%">
@@ -38,7 +38,7 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <tiles:BaseTile DataContext="{Binding Data}" MinHeight="150" Height="150" VerticalAlignment="Top" />
+            <main:TileContainerView DataContext="{Binding Data}" MinHeight="150" Height="150" VerticalAlignment="Top" />
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>

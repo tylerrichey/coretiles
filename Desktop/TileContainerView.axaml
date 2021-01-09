@@ -1,6 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="CoreTiles.Desktop.Tiles.BaseTile">
+             x:Class="CoreTiles.Desktop.TileContainerView">
 
   <ContentControl Content="{Binding .}" />
 </UserControl>

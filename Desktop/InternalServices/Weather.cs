@@ -28,7 +28,7 @@ namespace CoreTiles.Desktop.InternalServices
         public string Conditions { get; set; }
         public int Current { get; set; }
         public string CurrentString => Current + "°";
-        public string FullConditions => Precipitation + @" - " + TodayForecast;
+        public string FullConditions => Precipitation + " - " + TodayForecast;
         public string Low { get; set; }
         public string High { get; set; }
         public string TodayForecast { get; set; }

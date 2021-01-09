@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace CoreTiles.Tiles
 {
+    //todo organize this
     public abstract class Tile : ITile
     {
         public ConcurrentQueue<TileData> TileQueue { get; } = new ConcurrentQueue<TileData>();

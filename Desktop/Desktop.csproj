@@ -30,6 +30,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="TileContainerView.axaml.cs">
+      <DependentUpon>TileContainerView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\SystemTileConfigWindow.axaml.cs">
       <DependentUpon>SystemTileConfigWindow.axaml</DependentUpon>
     </Compile>

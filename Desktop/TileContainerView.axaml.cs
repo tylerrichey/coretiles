@@ -9,11 +9,11 @@ using System;
 using Avalonia.Controls.Templates;
 using CoreTiles.Desktop.Views;
 
-namespace CoreTiles.Desktop.Tiles
+namespace CoreTiles.Desktop
 {
-    public class BaseTile : UserControl
+    public class TileContainerView : UserControl
     {
-        public BaseTile() => InitializeComponent();
+        public TileContainerView() => InitializeComponent();
 
         private void InitializeComponent()
         {
