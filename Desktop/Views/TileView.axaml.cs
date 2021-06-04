@@ -56,6 +56,21 @@ namespace CoreTiles.Desktop.Views
                                     .Subscribe(isFocused => vm.AnnounceWindowFocus(isFocused));
                                 var mouseObv = mainWindow.GetObservable(Window.IsPointerOverProperty)
                                     .Subscribe(isPointerOver => vm.AnnounceWindowFocus(isPointerOver));
+
+                                mainWindow.KeyDown += (s, e) =>
+                                {
+                                    if (e.Key == Avalonia.Input.Key.Home)
+                                    {
+                                        scrollViewer.ScrollToHome();
+                                    }
+                                    if (e.Key == Avalonia.Input.Key.End)
+                                    {
+                                        scrollViewer.ScrollToEnd();
+                                    }
+                                };
+
+                                mainWindow.PointerMoved += (s, e) => vm.BufferItems = true;
+                                mainWindow.PointerLeave += (s, e) => vm.BufferItems = false;
                                 break;
                         }
                     };
@@ -64,9 +79,6 @@ namespace CoreTiles.Desktop.Views
                         .Subscribe(v => vm.BufferItems = v != 0);
 
                     var scrollHomeObv = vm.ScrollToHome.Subscribe(_ => scrollViewer.ScrollToHome());
-
-                    this.PointerMoved += (s, e) => vm.BufferItems = true;
-                    this.PointerLeave += (s, e) => vm.BufferItems = false;
                 });
         }
 

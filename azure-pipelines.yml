@@ -49,7 +49,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: False
-    arguments: '-p:PublishProfile=WinProfile -o $(winPath)'
+    arguments: '.\Desktop\Desktop.csproj -c Release --self-contained -r win-x64 -o $(winPath)'
     #zipAfterPublish: true
 
 - task: DotNetCoreCLI@2

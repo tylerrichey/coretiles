@@ -81,7 +81,6 @@ namespace CoreTiles.Tiles
                     .SelectMany(v => v.Variants)
                     .OrderByDescending(v => v.Bitrate)
                     .Select(v => v.URL)
-                    .Take(1)
                     .First();
                 VideoCommand = ReactiveCommand.Create(() =>
                 {
