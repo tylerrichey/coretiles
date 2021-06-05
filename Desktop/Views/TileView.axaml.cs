@@ -69,6 +69,14 @@ namespace CoreTiles.Desktop.Views
                                     }
                                 };
 
+                                mainWindow.PointerPressed += (s, e) =>
+                                {
+                                    if (e.GetCurrentPoint(this).Properties.IsMiddleButtonPressed)
+                                    {
+                                        scrollViewer.ScrollToHome();
+                                    }
+                                };
+
                                 mainWindow.PointerMoved += (s, e) => vm.BufferItems = true;
                                 mainWindow.PointerLeave += (s, e) => vm.BufferItems = false;
                                 break;
