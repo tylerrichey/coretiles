@@ -56,14 +56,14 @@ steps:
   inputs:
     command: publish
     publishWebProjects: False
-    arguments: '-p:PublishProfile=LinuxProfile -o $(linPath)'
+    arguments: '.\Desktop\Desktop.csproj -c Release --self-contained -r linux-x64 -o $(linPath)'
     #zipAfterPublish: True
 
 - task: DotNetCoreCLI@2
   inputs:
     command: publish
     publishWebProjects: False
-    arguments: '-p:PublishProfile=OSXProfile -o $(osxPath)'
+    arguments: '.\Desktop\Desktop.csproj -c Release --self-contained -r osx-x64 -o $(osxPath)'
     #zipAfterPublish: True
 
 - task: GithubRelease@0 
