@@ -32,7 +32,7 @@
           <TextBlock Foreground="OrangeRed" Text="{Binding ScreenName}" VerticalAlignment="Center" />
           <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
         </WrapPanel>
-        <TextBlock Text="{Binding TweetTime}" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" FontSize="11" />
+        <TextBlock Name="TweetTimeBlock" Text="{Binding TweetTime}" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" FontSize="11" />
       </Grid>
       <WrapPanel Name="TweetPanel" Orientation="Horizontal" Cursor="Hand" IsVisible="{Binding ShowAll}">
         <TextBlock Text="{Binding TweetText}" />

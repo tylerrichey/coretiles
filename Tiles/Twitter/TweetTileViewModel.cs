@@ -1,23 +1,19 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
+﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using ImageViewerWindow;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reactive;
-using System.Text;
 using System.Threading.Tasks;
 using Tweetinvi.Models;
-using NeoSmart.Unicode;
-using System.Text.RegularExpressions;
 using Avalonia.Media;
 using Avalonia.Input;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia;
 
 namespace CoreTiles.Tiles
 {
@@ -37,6 +33,7 @@ namespace CoreTiles.Tiles
         public string TweetUrl { get; set; }
         public string StatsUrl { get; set; }
         public bool ShowAll { get; set; }
+        public ITweet Tweet { get; set; }
 
         private IControl embeddedControl;
         public IControl EmbeddedControl
@@ -49,6 +46,7 @@ namespace CoreTiles.Tiles
 
         public TweetTileViewModel(ITweet tweet)
         {
+            Tweet = tweet;
             ScreenName = "@" + tweet.CreatedBy.ScreenName;
             ProfileUrl = "https://twitter.com/" + tweet.CreatedBy.ScreenName;
             TweetUrl = tweet.Urls.Count == 0 ? tweet.Url : tweet.Urls[0].URL;
@@ -67,6 +65,14 @@ namespace CoreTiles.Tiles
                 TweetText = tweet.FullText;
             }
             TweetText = WebUtility.HtmlDecode(TweetText);
+            foreach (var url in tweet.Urls)
+            {
+                TweetText = TweetText.Replace(url.URL, url.DisplayedURL);
+            }
+            foreach (var media in tweet.Media)
+            {
+                TweetText = TweetText.Replace(media.URL, string.Empty);
+            }
             TweetTime = "⏰" + tweet.CreatedAt.LocalDateTime.ToShortTimeString().Replace(" ", "");
             var stats = tweet.RetweetCount + tweet.ReplyCount.GetValueOrDefault() + tweet.QuoteCount.GetValueOrDefault();
             StatsCount = stats > 0 && !(tweet.IsRetweet && tweet.RetweetedTweet.QuotedTweet == null) ? "🔁" + stats : string.Empty;
@@ -76,37 +82,47 @@ namespace CoreTiles.Tiles
             VideoButtonEnabled = tweet.Media.Any(v => v.MediaType == "video");
             if (VideoButtonEnabled)
             {
-                var videoUrl = tweet.Media
-                    .Select(v => v.VideoDetails)
-                    .SelectMany(v => v.Variants)
-                    .OrderByDescending(v => v.Bitrate)
-                    .Select(v => v.URL)
-                    .First();
-                VideoCommand = ReactiveCommand.Create(() =>
-                {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = Helpers.SystemConfig.VideoPlayerLocation,
-                        Arguments = videoUrl,
-                        UseShellExecute = true
-                    });
-                });
+				try
+				{
+					var videoUrl = tweet.Media
+						.Select(v => v.VideoDetails)
+						.SelectMany(v => v.Variants)
+						.OrderByDescending(v => v.Bitrate)
+						.Select(v => v.URL)
+						.FirstOrDefault();
+					VideoCommand = ReactiveCommand.Create(() =>
+					{
+						Process.Start(new ProcessStartInfo
+						{
+							FileName = Helpers.SystemConfig.VideoPlayerLocation,
+							Arguments = videoUrl,
+							UseShellExecute = true
+						});
+					});
+				}
+				catch
+				{
+					//todo add logging
+					VideoButtonEnabled = false;
+				}
             }
 
             var photos = tweet.Media.Where(m => m.MediaType == "photo");
             PhotoButtonEnabled = photos.Count() > 1;
             PhotoCommand = ReactiveCommand.Create(async () =>
             {
-                using var viewModel = new ImageViewerViewModel(photos.Select(u => u.MediaURL));
-                var imageViewer = new ImageViewer
+                if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
-                    DataContext = viewModel
-                };
-                //this seems hacky, but the window is required to pass to ShowDialog to get something returned
-                //to wait on the window to close so things are disposed of properly
-                //if you pass in main window, then my lostfocus event on imageviewer doesn't work
-                var window = new Window();
-                await imageViewer.ShowDialog(window);
+                    using var viewModel = new ImageViewerViewModel(photos.Select(u => u.MediaURL));
+                    var imageViewer = new ImageViewer
+                    {
+                        DataContext = viewModel
+                    };
+                    //this seems hacky, but the window is required to pass to ShowDialog to get something returned
+                    //to wait on the window to close so things are disposed of properly
+                    //if you pass in main window, then my lostfocus event on imageviewer doesn't work
+                    await imageViewer.ShowDialog(desktop.MainWindow); 
+                }
             });
 
             var isRetweetThatQuotes = tweet.IsRetweet && tweet.RetweetedTweet.QuotedTweet != null;
@@ -154,12 +170,14 @@ namespace CoreTiles.Tiles
                     };
                     EmbeddedControl.PointerReleased += async (s, e) =>
                     {
-                        var imageViewer = new ImageViewer
+                        if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                         {
-                            DataContext = new ImageViewerViewModel(bitmap)
-                        };
-                        var window = new Window();
-                        await imageViewer.ShowDialog(window);
+                            var imageViewer = new ImageViewer
+                            {
+                                DataContext = new ImageViewerViewModel(bitmap)
+                            };
+                            await imageViewer.ShowDialog(desktop.MainWindow); 
+                        }
                     };
                 }).Execute().Subscribe();
             }
